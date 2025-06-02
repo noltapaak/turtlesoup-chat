@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { getRecordById, PlayRecord } from '../../../utils/record';
 import { scenarios } from '../../../data/scenarios';
 import ChatMessage from '../../../components/ChatMessage';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 
 export default function RecordReplayPage() {
   const { id } = useParams<{ id: string }>();
