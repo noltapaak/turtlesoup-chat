@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef, useEffect, useState } from 'react';
+import React, { Suspense, useRef, useEffect, useState } from 'react';
 import ChatMessage from '../components/ChatMessage';
 import ChatInput from '../components/ChatInput';
 import { useScenarioStore } from '../store/useScenarioStore';
@@ -9,7 +9,8 @@ import { callGptWithScenario } from '../utils/gpt';
 import { savePlayRecord } from '../utils/record';
 import { getUserId } from '../utils/user';
 
-export default function Home() {
+// 내부 컴포넌트로 기존 Home 로직 이동
+function ChatPageContent() {
   const chatEndRef = useRef<HTMLDivElement>(null);
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -74,7 +75,11 @@ export default function Home() {
     setLoading(false);
   };
 
-  if (!scenario) return null;
+  if (!scenario) {
+    // scenarioId가 없으면 위의 useEffect에서 /scenarios로 리다이렉트됩니다.
+    // scenarioId가 있지만 아직 scenario가 설정되지 않은 초기 상태일 수 있습니다.
+    return <div className="flex h-screen items-center justify-center">Loading scenario...</div>;
+  }
 
   return (
     <div className="flex flex-col h-screen bg-gray-50">
@@ -93,5 +98,13 @@ export default function Home() {
       </main>
       <ChatInput onSend={handleSend} disabled={loading || finished} />
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center text-lg">Loading page...</div>}>
+      <ChatPageContent />
+    </Suspense>
   );
 } 
