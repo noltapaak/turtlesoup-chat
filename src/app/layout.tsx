@@ -27,6 +27,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <nav className="p-2 bg-gray-100 text-right flex gap-4 justify-end">
+          <a href="/scenarios" className="text-blue-600 hover:underline text-sm">시나리오 선택</a>
+          <a href="/history" className="text-blue-600 hover:underline text-sm">히스토리</a>
+        </nav>
         {children}
       </body>
     </html>
