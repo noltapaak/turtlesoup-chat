@@ -23,7 +23,6 @@ export default function Home() {
     setScenario,
     addMessage,
     setFinished,
-    reset,
   } = useScenarioStore();
   const [loading, setLoading] = useState(false);
   const [recordSaved, setRecordSaved] = useState(false);
@@ -38,7 +37,7 @@ export default function Home() {
     if (found && (!scenario || scenario.id !== found.id)) {
       setScenario(found);
     }
-  }, [scenarioId]);
+  }, [scenarioId, router, scenario, setScenario]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -69,6 +68,7 @@ export default function Home() {
       // 정답 맞추기 성공 시 완료 처리(예시)
       if (aiMsg.includes('정답입니다')) setFinished(true);
     } catch (e) {
+      console.error(e);
       addMessage({ role: 'ai', content: 'AI 응답 오류가 발생했습니다.' });
     }
     setLoading(false);

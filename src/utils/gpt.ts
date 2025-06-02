@@ -1,7 +1,6 @@
 import { Scenario } from '../data/scenarios';
 
 export async function callGptWithScenario(prompt: string, scenario: Scenario) {
-  const isAnswerAttempt = /정답|답은|답:/i.test(prompt);
   const system = `너는 추리 게임의 마스터야.\n시나리오: ${scenario.title}\n설명: ${scenario.description}\n정답: ${scenario.answer}`;
 
   const messages = [

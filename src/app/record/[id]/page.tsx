@@ -7,7 +7,6 @@ import { useParams, useRouter } from 'next/navigation';
 
 export default function RecordReplayPage() {
   const { id } = useParams<{ id: string }>();
-  const router = useRouter();
   const [record, setRecord] = useState<PlayRecord | null>(null);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
