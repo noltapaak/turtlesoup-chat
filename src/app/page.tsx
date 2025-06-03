@@ -104,11 +104,14 @@ function ChatPageContent() {
   };
 
   const handleRestart = () => {
-    if (scenarioId) {
-      const currentScenario = scenarios.find(s => s.id === scenarioId);
-      if (currentScenario) {
-        setScenario(currentScenario);
-      }
+    if (scenario) {
+      useScenarioStore.setState({
+        messages: [{ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}\n\n규칙: ${scenario.rules}` }],
+        questionCount: 0,
+        finished: false,
+      });
+      setRecordSaved(false);
+      setShowRestartModal(false);
     }
   };
 
