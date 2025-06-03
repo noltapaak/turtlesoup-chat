@@ -41,7 +41,19 @@ function ChatPageContent() {
       useScenarioStore.setState({ messages: [], questionCount: 0, finished: false });
       setRecordSaved(false);
       setShowRestartModal(false);
-      addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}\n\n규칙: ${found.rules}` });
+      // addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}\n\n규칙: ${found.rules}` }); // 기존 방식
+      
+      // 변경된 방식: 여러 메시지로 분리
+      addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}` });
+      
+      const rulesParts = found.rules.split('\n\n예시 질문:');
+      const mainRules = rulesParts[0];
+      const exampleQuestions = rulesParts[1] ? `예시 질문:\n${rulesParts[1]}` : undefined;
+
+      addMessage({ role: 'ai', content: `규칙:\n${mainRules}` });
+      if (exampleQuestions) {
+        addMessage({ role: 'ai', content: exampleQuestions });
+      }
     }
   }, [scenarioId, router, scenario, setScenario, addMessage]);
 
@@ -104,8 +116,28 @@ function ChatPageContent() {
 
   const handleRestart = () => {
     if (scenario) {
+      // 기존 메시지 설정 방식
+      // useScenarioStore.setState({
+      //   messages: [{ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}\n\n규칙: ${scenario.rules}` }],
+      //   questionCount: 0,
+      //   finished: false, 
+      // });
+
+      // 변경된 방식: 여러 메시지로 분리하여 설정
+      const initialMessages: { role: 'ai' | 'user'; content: string }[] = [];
+      initialMessages.push({ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}` });
+      
+      const rulesParts = scenario.rules.split('\n\n예시 질문:');
+      const mainRules = rulesParts[0];
+      const exampleQuestions = rulesParts[1] ? `예시 질문:\n${rulesParts[1]}` : undefined;
+
+      initialMessages.push({ role: 'ai', content: `규칙:\n${mainRules}` });
+      if (exampleQuestions) {
+        initialMessages.push({ role: 'ai', content: exampleQuestions });
+      }
+
       useScenarioStore.setState({
-        messages: [{ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}\n\n규칙: ${scenario.rules}` }],
+        messages: initialMessages,
         questionCount: 0,
         finished: false, 
       });
