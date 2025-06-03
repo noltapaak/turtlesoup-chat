@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-import Image from 'next/image';
+// import Image from 'next/image'; // 주석 처리 또는 삭제
 import { scenarios } from '../../data/scenarios';
 
 export default function ScenariosPage() {
