@@ -85,9 +85,13 @@ function ChatPageContent() {
       addMessage({ role: 'ai', content: aiMsg });
       // 정답 맞추기 성공 시 완료 처리(예시)
       if (aiMsg.includes('정답입니다')) setFinished(true);
-    } catch (e: any) { // 타입 any 명시적 사용 또는 unknown 후 타입 가드
+    } catch (e: unknown) { // 타입을 unknown으로 변경
       console.error(e);
-      addMessage({ role: 'ai', content: e.message || 'AI 응답 오류가 발생했습니다.' });
+      let errorMessage = 'AI 응답 오류가 발생했습니다.';
+      if (e instanceof Error) {
+        errorMessage = e.message;
+      }
+      addMessage({ role: 'ai', content: errorMessage });
     }
     setLoading(false);
   };
@@ -99,18 +103,22 @@ function ChatPageContent() {
   }
 
   return (
-    <div className="flex flex-col h-screen bg-gray-50">
-      <header className="p-4 bg-white shadow flex items-center justify-between">
-        <h1 className="text-lg font-bold">🐢 TurtleSoup.chat</h1>
-        <div className="text-sm">질문 수: <span className="font-semibold">{questionCount}</span></div>
+    <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-800">
+      <header className="p-4 bg-white dark:bg-gray-700 shadow flex items-center justify-between">
+        <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">🐢 TurtleSoup.chat</h1>
+        <div className="text-sm text-gray-600 dark:text-gray-300">질문 수: <span className="font-semibold text-gray-700 dark:text-gray-200">{questionCount}</span></div>
       </header>
       <main className="flex-1 overflow-y-auto p-4">
-        <div className="mb-4 text-gray-700 text-base font-semibold">{scenario.title}</div>
+        <div className="mb-4 text-gray-700 dark:text-gray-200 text-base font-semibold">{scenario.title}</div>
         {messages.map((msg: { role: 'user' | 'ai'; content: string }, idx: number) => (
           <ChatMessage key={idx} message={msg.content} role={msg.role} />
         ))}
         {loading && <ChatMessage message="AI가 답변 중..." role="ai" />}
-        {finished && <div className="mt-4 p-3 bg-green-100 text-green-800 rounded">🎉 게임이 완료되었습니다!</div>}
+        {finished && 
+          <div className="mt-4 p-3 bg-green-100 dark:bg-green-700 text-green-800 dark:text-green-100 rounded">
+            🎉 게임이 완료되었습니다!
+          </div>
+        }
         <div ref={chatEndRef} />
       </main>
       <ChatInput onSend={handleSend} disabled={loading || finished} />
@@ -120,7 +128,7 @@ function ChatPageContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="flex h-screen items-center justify-center text-lg">Loading page...</div>}>
+    <Suspense fallback={<div className="flex h-screen items-center justify-center text-lg text-gray-800 dark:text-gray-100">Loading page...</div>}>
       <ChatPageContent />
     </Suspense>
   );

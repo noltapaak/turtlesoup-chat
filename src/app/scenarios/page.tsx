@@ -1,27 +1,21 @@
 "use client";
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { scenarios } from '../../data/scenarios';
 
 export default function ScenariosPage() {
-  const router = useRouter();
-
-  const handleSelect = (id: string) => {
-    // 시나리오 선택 시 메인 페이지로 이동 (id 쿼리 전달)
-    router.push(`/?scenario=${id}`);
-  };
-
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <h2 className="text-2xl font-bold mb-6">시나리오 선택</h2>
-      <ul className="space-y-4">
-        {scenarios.map(s => (
-          <li key={s.id} className="bg-white p-4 rounded shadow cursor-pointer hover:bg-blue-50" onClick={() => handleSelect(s.id)}>
-            <div className="font-semibold text-lg">{s.title}</div>
-            <div className="text-gray-600 text-sm mt-1">{s.description}</div>
-          </li>
+    <div className="p-6 bg-gray-50 dark:bg-gray-800 min-h-screen">
+      <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">시나리오 선택</h1>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {scenarios.map(scenario => (
+          <Link key={scenario.id} href={`/?scenario=${scenario.id}`} passHref>
+            <div className="block p-6 bg-white dark:bg-gray-700 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer">
+              <h2 className="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-200">{scenario.title}</h2>
+              <p className="text-gray-600 dark:text-gray-300 text-sm">{scenario.description}</p>
+            </div>
+          </Link>
         ))}
-      </ul>
+      </div>
     </div>
   );
 } 

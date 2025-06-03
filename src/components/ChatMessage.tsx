@@ -5,15 +5,19 @@ interface ChatMessageProps {
   role: 'user' | 'ai';
 }
 
-export default function ChatMessage({ message, role }: ChatMessageProps) {
+const ChatMessage: React.FC<ChatMessageProps> = ({ message, role }) => {
+  const isUser = role === 'user';
   return (
-    <div className={`flex ${role === 'user' ? 'justify-end' : 'justify-start'} mb-2`}>
+    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-3`}>
       <div
-        className={`max-w-xs px-4 py-2 rounded-lg shadow text-sm whitespace-pre-line break-words '
-          ${role === 'user' ? 'bg-blue-500 text-white rounded-br-none' : 'bg-gray-200 text-gray-900 rounded-bl-none'}`}
+        className={`max-w-[70%] p-3 rounded-lg whitespace-pre-wrap ${isUser
+            ? 'bg-blue-500 text-white dark:bg-blue-600 dark:text-gray-100'
+            : 'bg-gray-200 text-gray-800 dark:bg-gray-600 dark:text-gray-100'}`}
       >
         {message}
       </div>
     </div>
   );
-} 
+};
+
+export default ChatMessage; 
