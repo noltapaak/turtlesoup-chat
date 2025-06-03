@@ -51,7 +51,6 @@ function ChatPageContent() {
 
   useEffect(() => {
     if (finished && !recordSaved && scenario) {
-      // 게임 완료 시 기록 저장
       savePlayRecord({
         userId: getUserId(),
         scenarioId: scenario.id,
@@ -108,10 +107,10 @@ function ChatPageContent() {
       useScenarioStore.setState({
         messages: [{ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}\n\n규칙: ${scenario.rules}` }],
         questionCount: 0,
-        finished: false,
+        finished: false, 
       });
-      setRecordSaved(false);
-      setShowRestartModal(false);
+      setRecordSaved(false); 
+      setShowRestartModal(false); 
     }
   };
 
