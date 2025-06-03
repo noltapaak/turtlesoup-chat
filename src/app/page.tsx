@@ -145,7 +145,8 @@ function ChatPageContent() {
       {showRestartModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-xl text-center">
-            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">게임 완료!</h2>
+            <h2 className="text-xl font-semibold mb-2 dark:text-gray-100">게임 완료!</h2>
+            <p className="mb-1 dark:text-gray-200">총 질문 횟수: {questionCount}</p>
             <p className="mb-6 dark:text-gray-200">이 시나리오를 다시 시작하시겠습니까?</p>
             <div className="flex justify-center gap-4">
               <button 
