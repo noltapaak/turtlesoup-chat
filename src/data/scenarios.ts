@@ -16,7 +16,7 @@ export const scenarios: Scenario[] = [
     answer: '남자는 과거에 조난을 당해 바다거북 수프라고 들은 수프를 먹었으나, 실제로는 사람 고기였다. 진짜 바다거북 수프 맛을 확인하고 진실을 깨달아 자살했다.',
     explanation: '이 문제는 대표적인 바다거북 수프(추리 게임) 문제입니다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 식당에 혼자 갔나요?\n- 수프에 이상한 것이 들어 있었나요?',
-    image: 'https://picsum.photos/400/250?random=1'
+    image: 'https://source.unsplash.com/random/400x250?turtle,soup,mystery'
   },
   {
     id: '2',
@@ -24,7 +24,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 붉은 옷을 입은 여자를 보고 도망쳤다. 왜?',
     answer: '남자는 색맹이었고, 붉은 옷을 입은 여자를 처음 보고 피에 대한 트라우마가 떠올라 도망쳤다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 여자는 실제 사람인가요?\n- 남자는 특정 직업을 가지고 있나요?',
-    image: 'https://picsum.photos/400/250?random=2'
+    image: 'https://source.unsplash.com/random/400x250?red,woman,mystery'
   },
   {
     id: '3',
@@ -32,7 +32,7 @@ export const scenarios: Scenario[] = [
     description: '정전이 된 후, 한 남자가 엘리베이터 안에서 죽었다. 무슨 일이 있었을까?',
     answer: '남자는 시각장애인으로, 엘리베이터 안내원이었다. 정전으로 인해 층수를 알 수 없어 내리지 못하고 갇혀 죽었다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 엘리베이터에 혼자 있었나요?\n- 정전은 오랫동안 지속되었나요?',
-    image: 'https://picsum.photos/400/250?random=3'
+    image: 'https://source.unsplash.com/random/400x250?blackout,elevator,mystery'
   },
   {
     id: '4',
@@ -40,7 +40,7 @@ export const scenarios: Scenario[] = [
     description: '사막 한가운데에 한 남자가 죽어 있었다. 주변에는 아무런 발자국도 없었다. 남자는 어떻게 죽었을까?',
     answer: '남자는 비행기에서 떨어졌다. (비행기 추락 사고의 희생자)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 사막에서 길을 잃었나요?\n- 남자 주변에 다른 물건이 있었나요?',
-    image: 'https://picsum.photos/400/250?random=4'
+    image: 'https://source.unsplash.com/random/400x250?desert,man,mystery'
   },
   {
     id: '5',
@@ -48,7 +48,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 문이 닫힌 방 안에서 목을 매달고 죽어 있었다. 방 안에는 어떤 가구도 없었고, 바닥에는 물웅덩이만 있었다. 어떻게 된 일일까?',
     answer: '남자는 얼음 위에 올라가 목을 맸고, 얼음이 녹아 물웅덩이가 되었다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 방은 잠겨 있었나요?\n- 물웅덩이는 깨끗한 물이었나요?',
-    image: 'https://picsum.photos/400/250?random=5'
+    image: 'https://source.unsplash.com/random/400x250?closed,door,mystery'
   },
   {
     id: '6',
@@ -56,7 +56,7 @@ export const scenarios: Scenario[] = [
     description: '눈 내리는 깊은 산 속 산장에서 한 남자가 죽은 채 발견되었다. 외부 침입 흔적은 없었다. 범인은 누구일까?',
     answer: '남자는 산장 주인이었고, 눈사태로 인해 산장이 무너지면서 압사했다. (범인은 자연재해)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 살해당했나요?\n- 산장에는 남자 혼자 있었나요?',
-    image: 'https://picsum.photos/400/250?random=6'
+    image: 'https://source.unsplash.com/random/400x250?cabin,mountain,snow,mystery'
   },
   {
     id: '7',
@@ -64,7 +64,7 @@ export const scenarios: Scenario[] = [
     description: '음악이 멈추자 한 여자가 죽었다. 무슨 일일까?',
     answer: '여자는 곡예사였고, 눈을 가린 채 음악에 맞춰 칼 피하기 묘기를 하고 있었다. 음악이 갑자기 멈추자 타이밍을 놓쳐 칼에 찔렸다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 여자는 음악가였나요?\n- 음악은 라디오에서 나왔나요?',
-    image: 'https://picsum.photos/400/250?random=7'
+    image: 'https://source.unsplash.com/random/400x250?music,death,mystery'
   },
   {
     id: '8',
@@ -72,7 +72,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자 앞에 두 개의 알약이 놓여 있었다. 하나는 독약, 하나는 평범한 약이었다. 남자는 둘 중 하나를 먹고 죽었다. 어떻게 독약을 골랐을까?',
     answer: '누군가가 남자에게 두 알약 중 하나를 골라 먹으라고 시켰고, 남자는 아무거나 골라 반으로 쪼개어 반쪽씩 먹었다. (혹은, 물에 녹여 반만 마셨다) 결국 독약의 치사량 절반만 섭취했지만, 시킨 사람은 남자가 평범한 약을 골랐다고 생각하고 나머지 반쪽(독약)을 먹어 죽었다. 문제는 남자가 죽었다고 했으므로, 남자는 평범한 약을 골랐고, 범인이 독약을 먹은 것. 이 문제는 약간 변형되어 범인이 죽는 대신 남자가 죽는 상황. 남자는 시한부 인생이었고, 어떤 약을 먹든 상관 없었다. 혹은, 협박범이 준 두 알약 모두 독약이었다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 스스로 약을 선택했나요?\n- 알약의 색깔이 달랐나요?',
-    image: 'https://picsum.photos/400/250?random=8'
+    image: 'https://source.unsplash.com/random/400x250?pills,choice,mystery'
   },
   {
     id: '9',
@@ -80,7 +80,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 자기 차 옆에서 죽어 있었다. 차 문은 잠겨 있었고, 주변에는 아무도 없었다. 어떻게 된 일일까?',
     answer: '남자는 차 지붕 위에 올라가서 작업을 하다가 떨어져 죽었고, 그 충격으로 차문이 잠겼다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 차 안에 있었나요?\n- 차는 움직이고 있었나요?',
-    image: 'https://picsum.photos/400/250?random=9'
+    image: 'https://source.unsplash.com/random/400x250?car,accident,mystery'
   },
   {
     id: '10',
@@ -88,7 +88,7 @@ export const scenarios: Scenario[] = [
     description: '완벽한 밀실에서 한 사업가가 살해당했다. 방 안에는 깨진 유리 조각과 물이 흩어져 있었다. 범행 도구는 무엇일까?',
     answer: '범행 도구는 고드름이었다. 범인은 고드름으로 피해자를 찌르고, 고드름은 녹아 물이 되었고, 창문을 깨고 도망쳤다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 사업가는 혼자 있었나요?\n- 깨진 유리는 창문 유리인가요?',
-    image: 'https://picsum.photos/400/250?random=10'
+    image: 'https://source.unsplash.com/random/400x250?locked,room,murder,mystery'
   },
   {
     id: '11',
@@ -96,7 +96,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 전화 부스 안에서 죽어 있었다. 부스 유리에는 금이 가 있었고, 바닥에는 물고기가 떨어져 있었다. 무슨 일일까?',
     answer: '남자는 낚시 중 큰 물고기를 낚았고, 이를 자랑하려고 전화 부스에서 친구에게 전화하다가 물고기가 너무 커서 부스 유리에 부딪히며 그 충격으로 사망했다. (혹은, 어부가 폭풍우 속에서 전화를 걸다가 배가 전복되어 전화 부스가 있는 해안가로 떠내려왔고, 그 과정에서 사망하고 물고기도 함께 딸려왔다.)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 전화를 하고 있었나요?\n- 물고기는 살아 있었나요?',
-    image: 'https://picsum.photos/400/250?random=11'
+    image: 'https://source.unsplash.com/random/400x250?phone,booth,mystery'
   },
   {
     id: '12',
@@ -104,7 +104,7 @@ export const scenarios: Scenario[] = [
     description: '숲 속 외딴 오두막에서 다섯 명이 죽은 채 발견되었다. 오두막은 안에서 잠겨 있었다. 어떻게 된 일일까?',
     answer: '다섯 명은 비행기 추락 사고의 생존자들이었고, 오두막은 비행기의 동체 일부였다. 그들은 구조를 기다리다 결국 사망했다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 다섯 명은 서로 아는 사이였나요?\n- 오두막은 사람이 사는 곳이었나요?',
-    image: 'https://picsum.photos/400/250?random=12'
+    image: 'https://source.unsplash.com/random/400x250?forest,cabin,mystery'
   },
   {
     id: '13',
@@ -112,7 +112,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자는 항상 엘리베이터를 타고 10층까지 올라간 뒤, 계단을 이용해 15층 자신의 집까지 갔다. 비가 오는 날에는 예외적으로 15층까지 엘리베이터를 타고 갔다. 왜일까?',
     answer: '남자는 키가 작아서 15층 버튼에 손이 닿지 않았다. 비가 오는 날에는 우산으로 버튼을 눌렀다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 혼자 살았나요?\n- 엘리베이터에 다른 사람이 있었나요?',
-    image: 'https://picsum.photos/400/250?random=13'
+    image: 'https://source.unsplash.com/random/400x250?elevator,button,mystery'
   },
   {
     id: '14',
@@ -120,7 +120,7 @@ export const scenarios: Scenario[] = [
     description: '들판 한가운데에 있는 건초더미 옆에서 한 남자가 나체로 죽어 있었다. 남자의 손에는 성냥개비가 부러진 채 들려 있었다. 무슨 일일까?',
     answer: '남자는 열기구를 타고 가다가 무게를 줄이기 위해 옷을 벗어 던졌고, 마지막으로 성냥개비로 불을 붙이려 했으나 실패하고 추락했다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 자살했나요?\n- 건초더미는 사건과 관련이 있나요?',
-    image: 'https://picsum.photos/400/250?random=14'
+    image: 'https://source.unsplash.com/random/400x250?haystack,field,mystery'
   },
   {
     id: '15',
@@ -128,7 +128,7 @@ export const scenarios: Scenario[] = [
     description: '은행 지하 금고 앞에서 두 명의 경비원이 죽어 있었다. 금고는 무사했고, 외부 침입 흔적도 없었다. 무슨 일이 있었을까?',
     answer: '경비원들은 장난으로 서로에게 총을 겨누다가 실수로 발포하여 서로를 죽였다. 혹은, 한 경비원이 동료를 죽이고 자살했다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 경비원들은 무기를 가지고 있었나요?\n- 금고 안에는 무엇이 들어있었나요?',
-    image: 'https://picsum.photos/400/250?random=15'
+    image: 'https://source.unsplash.com/random/400x250?guards,bank,mystery'
   },
   {
     id: '16',
@@ -136,7 +136,7 @@ export const scenarios: Scenario[] = [
     description: '배가 난파되어 모든 승객과 승무원이 사망했지만, 단 한 사람만 살아남았다. 그는 어떻게 살아남았을까?',
     answer: '그는 선장이었고, 배와 함께 침몰하는 대신 작은 구명보트를 타고 탈출했다. (또는, 그는 승객 명단에 없는 밀항자였다.)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 생존자는 남자였나요?\n- 배는 폭풍을 만났나요?',
-    image: 'https://picsum.photos/400/250?random=16'
+    image: 'https://source.unsplash.com/random/400x250?survivor,shipwreck,mystery'
   },
   {
     id: '17',
@@ -144,7 +144,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 침대 옆에 있는 톱밥 때문에 죽었다. 왜일까?',
     answer: '남자는 서커스단의 난쟁이 광대였고, 누군가 그의 나무 침대 다리를 조금씩 잘라냈다. 매일 밤 그는 침대에서 떨어져 죽을까 봐 두려워했고, 결국 심장마비로 죽었다. 톱밥은 잘린 침대 다리에서 나온 것.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 목수였나요?\n- 톱밥은 어떤 종류의 나무였나요?',
-    image: 'https://picsum.photos/400/250?random=17'
+    image: 'https://source.unsplash.com/random/400x250?sawdust,bed,mystery'
   },
   {
     id: '18',
@@ -152,7 +152,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 생일 선물로 받은 소포를 열어보고는 매우 기뻐하며 밖으로 뛰쳐나갔다. 잠시 후 그는 죽은 채 발견되었다. 소포 안에는 무엇이 있었을까?',
     answer: '소포 안에는 한쪽 발만 있는 신발이 들어 있었다. 남자는 외발이었고, 평생 자신에게 맞는 신발을 찾지 못했는데 드디어 찾았다고 생각했다. 기뻐하며 신발을 신고 뛰쳐나갔지만, 균형을 잃고 사고를 당했다. (다른 버전: 남자는 스카이다이버였고, 선물은 낙하산이었으나 결함이 있었다.)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 선물은 위험한 물건이었나요?\n- 남자는 선물을 받고 화가 났나요?',
-    image: 'https://picsum.photos/400/250?random=18'
+    image: 'https://source.unsplash.com/random/400x250?gift,mystery,surprise'
   },
   {
     id: '19',
@@ -160,7 +160,7 @@ export const scenarios: Scenario[] = [
     description: '한 남자가 사과 때문에 죽었다. 어떤 사과였을까?',
     answer: '남자는 백설공주 연극에서 왕자 역할을 맡은 배우였다. 독이 든 사과를 먹는 연기를 하다가 실제로 사과가 목에 걸려 질식사했다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 사과는 독이 있었나요?\n- 남자는 사과를 먹었나요?',
-    image: 'https://picsum.photos/400/250?random=19'
+    image: 'https://source.unsplash.com/random/400x250?apple,man,death,mystery'
   },
   {
     id: '20',
@@ -168,6 +168,6 @@ export const scenarios: Scenario[] = [
     description: '비행기 추락 사고 현장에서 조종사만 살아남았다. 하지만 그는 곧 체포되었다. 왜일까?',
     answer: '조종사는 사실 시뮬레이션 게임 중이었고, 너무 몰입한 나머지 큰 소리를 질러서 옆방 사람에게 신고당했다. (또는, 조종사는 비행 교관이었고, 사고는 그의 과실이었다.)',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 조종사는 범죄를 저질렀나요?\n- 비행기에는 다른 승객이 있었나요?',
-    image: 'https://picsum.photos/400/250?random=20'
+    image: 'https://source.unsplash.com/random/400x250?airplane,crash,pilot,mystery'
   },
 ]; 
