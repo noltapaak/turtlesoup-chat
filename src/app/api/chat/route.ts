@@ -55,8 +55,12 @@ export async function POST(req: NextRequest) {
     console.log('Successfully got AI response.');
     return NextResponse.json({ response: aiResponse });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('API Route CATCH Block Error:', error);
-    return NextResponse.json({ error: error.message || 'Internal server error in catch block' }, { status: 500 });
+    let errorMessage = 'Internal server error in catch block';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 } 
