@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import Link from "next/link";
+// import Link from "next/link"; // 주석 처리 또는 삭제
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
