@@ -5,7 +5,7 @@ import ChatInput from '../components/ChatInput';
 import { useScenarioStore } from '../store/useScenarioStore';
 import { scenarios } from '../data/scenarios';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { callGptWithScenario } from '../utils/gpt';
+// import { callGptWithScenario } from '../utils/gpt'; // 더 이상 사용하지 않음
 import { savePlayRecord } from '../utils/record';
 import { getUserId } from '../utils/user';
 
@@ -37,8 +37,9 @@ function ChatPageContent() {
     const found = scenarios.find(s => s.id === scenarioId);
     if (found && (!scenario || scenario.id !== found.id)) {
       setScenario(found);
+      addMessage({ role: 'ai', content: found.rules });
     }
-  }, [scenarioId, router, scenario, setScenario]);
+  }, [scenarioId, router, scenario, setScenario, addMessage]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -64,13 +65,29 @@ function ChatPageContent() {
     addMessage({ role: 'user', content: value });
     setLoading(true);
     try {
-      const aiMsg = await callGptWithScenario(value, scenario);
+      // const aiMsg = await callGptWithScenario(value, scenario); // 기존 직접 호출 제거
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ prompt: value, scenario }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'API 요청 실패');
+      }
+
+      const data = await response.json();
+      const aiMsg = data.response;
+
       addMessage({ role: 'ai', content: aiMsg });
       // 정답 맞추기 성공 시 완료 처리(예시)
       if (aiMsg.includes('정답입니다')) setFinished(true);
-    } catch (e) {
+    } catch (e: any) { // 타입 any 명시적 사용 또는 unknown 후 타입 가드
       console.error(e);
-      addMessage({ role: 'ai', content: 'AI 응답 오류가 발생했습니다.' });
+      addMessage({ role: 'ai', content: e.message || 'AI 응답 오류가 발생했습니다.' });
     }
     setLoading(false);
   };
