@@ -11,7 +11,7 @@ export default function ScenariosPage() {
         {scenarios.map(scenario => (
           <Link key={scenario.id} href={`/?scenario=${scenario.id}`} passHref>
             <div className="block bg-white dark:bg-gray-700 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
-              <div className="relative w-full h-48 md:h-56">
+              {/* <div className="relative w-full h-48 md:h-56">
                 <Image
                   src={scenario.image}
                   alt={scenario.title}
@@ -19,7 +19,7 @@ export default function ScenariosPage() {
                   objectFit="cover"
                   className="dark:brightness-90"
                 />
-              </div>
+              </div> */}
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-200">{scenario.title}</h2>
                 <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
