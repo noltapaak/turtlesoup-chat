@@ -27,6 +27,7 @@ function ChatPageContent() {
   } = useScenarioStore();
   const [loading, setLoading] = useState(false);
   const [recordSaved, setRecordSaved] = useState(false);
+  const [showRestartModal, setShowRestartModal] = useState(false);
 
   // 시나리오 선택 안 했으면 /scenarios로 이동
   useEffect(() => {
@@ -37,7 +38,10 @@ function ChatPageContent() {
     const found = scenarios.find(s => s.id === scenarioId);
     if (found && (!scenario || scenario.id !== found.id)) {
       setScenario(found);
-      addMessage({ role: 'ai', content: found.rules });
+      useScenarioStore.setState({ messages: [], questionCount: 0, finished: false });
+      setRecordSaved(false);
+      setShowRestartModal(false);
+      addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}\n\n규칙: ${found.rules}` });
     }
   }, [scenarioId, router, scenario, setScenario, addMessage]);
 
@@ -57,6 +61,7 @@ function ChatPageContent() {
         timestamp: Date.now(),
       });
       setRecordSaved(true);
+      setShowRestartModal(true);
     }
   }, [finished, recordSaved, scenario, messages, questionCount]);
 
@@ -65,7 +70,6 @@ function ChatPageContent() {
     addMessage({ role: 'user', content: value });
     setLoading(true);
     try {
-      // const aiMsg = await callGptWithScenario(value, scenario); // 기존 직접 호출 제거
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
@@ -83,9 +87,12 @@ function ChatPageContent() {
       const aiMsg = data.response;
 
       addMessage({ role: 'ai', content: aiMsg });
-      // 정답 맞추기 성공 시 완료 처리(예시)
-      if (aiMsg.includes('정답입니다')) setFinished(true);
-    } catch (e: unknown) { // 타입을 unknown으로 변경
+      
+      // API 응답에서 "정답입니다!" 와 같은 특정 키워드를 확인하여 finished 상태 변경
+      if (aiMsg.includes('정답입니다!')) { 
+        setFinished(true);
+      }
+    } catch (e: unknown) {
       console.error(e);
       let errorMessage = 'AI 응답 오류가 발생했습니다.';
       if (e instanceof Error) {
@@ -94,6 +101,19 @@ function ChatPageContent() {
       addMessage({ role: 'ai', content: errorMessage });
     }
     setLoading(false);
+  };
+
+  const handleRestart = () => {
+    if (scenarioId) {
+      const currentScenario = scenarios.find(s => s.id === scenarioId);
+      if (currentScenario) {
+        setScenario(currentScenario);
+      }
+    }
+  };
+
+  const handleGoHome = () => {
+    router.push('/scenarios');
   };
 
   if (!scenario) {
@@ -105,7 +125,7 @@ function ChatPageContent() {
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-800">
       <header className="p-4 bg-white dark:bg-gray-700 shadow flex items-center justify-between">
-        <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">🐢 TurtleSoup.chat</h1>
+        <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">{scenario.title}</h1>
         <div className="text-sm text-gray-600 dark:text-gray-300">질문 수: <span className="font-semibold text-gray-700 dark:text-gray-200">{questionCount}</span></div>
       </header>
       <main className="flex-1 overflow-y-auto p-4">
@@ -122,6 +142,28 @@ function ChatPageContent() {
         <div ref={chatEndRef} />
       </main>
       <ChatInput onSend={handleSend} disabled={loading || finished} />
+      {showRestartModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-xl text-center">
+            <h2 className="text-xl font-semibold mb-4 dark:text-gray-100">게임 완료!</h2>
+            <p className="mb-6 dark:text-gray-200">이 시나리오를 다시 시작하시겠습니까?</p>
+            <div className="flex justify-center gap-4">
+              <button 
+                onClick={handleRestart}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 dark:bg-blue-600 dark:hover:bg-blue-700"
+              >
+                재시작
+              </button>
+              <button 
+                onClick={handleGoHome}
+                className="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 dark:bg-gray-600 dark:text-gray-100 dark:hover:bg-gray-500"
+              >
+                시나리오 선택으로
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
