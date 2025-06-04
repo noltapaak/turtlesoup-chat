@@ -86,6 +86,7 @@ function ChatPageContent() {
 
   const handleSend = async (value: string) => {
     if (!scenario) return;
+    const currentMessages = useScenarioStore.getState().messages; // API 호출 직전의 최신 메시지 가져오기
     addMessage({ role: 'user', content: value });
     setLoading(true);
     try {
@@ -94,7 +95,8 @@ function ChatPageContent() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: value, scenario }),
+        // 이전 메시지(currentMessages)와 현재 프롬프트(value), 시나리오를 함께 전달
+        body: JSON.stringify({ prompt: value, scenario, messages: currentMessages }),
       });
 
       if (!response.ok) {
