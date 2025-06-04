@@ -1,6 +1,6 @@
 "use client";
 import Link from 'next/link';
-// import Image from 'next/image'; // 주석 처리 또는 삭제
+import Image from 'next/image'; // 주석 해제
 import { scenarios } from '../../data/scenarios';
 
 export default function ScenariosPage() {
@@ -11,15 +11,18 @@ export default function ScenariosPage() {
         {scenarios.map(scenario => (
           <Link key={scenario.id} href={`/?scenario=${scenario.id}`} passHref>
             <div className="block bg-white dark:bg-gray-700 rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer overflow-hidden">
-              {/* <div className="relative w-full h-48 md:h-56">
-                <Image
-                  src={scenario.image}
-                  alt={scenario.title}
-                  layout="fill"
-                  objectFit="cover"
-                  className="dark:brightness-90"
-                />
-              </div> */}
+              {/* scenario.image가 유효한 로컬 경로인 경우에만 이미지를 표시합니다. */}
+              {scenario.image && scenario.image.startsWith('/images/') && (
+                <div className="relative w-full h-48 md:h-56">
+                  <Image
+                    src={scenario.image} // scenarios.ts에 정의된 로컬 경로 사용
+                    alt={scenario.title}
+                    layout="fill"
+                    objectFit="cover"
+                    className="dark:brightness-90"
+                  />
+                </div>
+              )}
               <div className="p-4">
                 <h2 className="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-200">{scenario.title}</h2>
                 <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
