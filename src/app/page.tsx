@@ -25,7 +25,7 @@ function ChatPageContent() {
     setScenario,
     addMessage,
     setFinished,
-    useHint, // Zustand 스토어 액션
+    updateHintsUsed, // 이름 변경된 액션 사용
     loadInitialHints, // Zustand 스토어 액션
   } = useScenarioStore();
   const [loading, setLoading] = useState(false);
@@ -163,7 +163,7 @@ function ChatPageContent() {
 
     const hintToShow = scenario.hints[currentUsedHints];
     addMessage({ role: 'ai', content: `힌트: ${hintToShow}` });
-    useHint(scenario.id); // Zustand 스토어 액션 호출
+    updateHintsUsed(scenario.id); // 이름 변경된 액션 호출
     localStorage.setItem(`hints_${scenario.id}`, (currentUsedHints + 1).toString()); // 로컬 스토리지 업데이트
   };
 

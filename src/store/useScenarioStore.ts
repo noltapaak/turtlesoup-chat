@@ -17,7 +17,7 @@ interface ScenarioState {
   incrementQuestionCount: () => void;
   setFinished: (finished: boolean) => void;
   resetMessages: () => void;
-  useHint: (scenarioId: string) => void; // 힌트 사용 액션
+  updateHintsUsed: (scenarioId: string) => void; // 이름 변경: useHint -> updateHintsUsed
   loadInitialHints: (scenarioId: string, count: number) => void; // 초기 힌트 로드 액션
 }
 
@@ -35,7 +35,7 @@ export const useScenarioStore = create<ScenarioState>((set, get) => ({
   incrementQuestionCount: () => set((state) => ({ questionCount: state.questionCount + 1 })),
   setFinished: (finished) => set({ finished }),
   resetMessages: () => set({ messages: [] }),
-  useHint: (scenarioId) => {
+  updateHintsUsed: (scenarioId) => { // 이름 변경
     const currentScenarioHints = get().usedHintsMap[scenarioId] || 0;
     const scenario = get().scenario;
     if (scenario && scenario.hints && currentScenarioHints < scenario.hints.length) {
