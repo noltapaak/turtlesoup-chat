@@ -1,4 +1,4 @@
-import type { Config } from "tailwindcss";
+import type { Config } from "tailwindcss" with { "resolution-mode": "require" };
 
 const config: Config = {
   darkMode: 'class', // 다크 모드 클래스 전략 활성화
