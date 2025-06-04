@@ -6,6 +6,7 @@ export interface Scenario {
   explanation?: string;
   rules: string;
   image: string;
+  hints?: string[];
 }
 
 export const scenarios: Scenario[] = [
@@ -16,7 +17,12 @@ export const scenarios: Scenario[] = [
     answer: '남자는 과거에 조난을 당해 바다거북 수프라고 들은 수프를 먹었으나, 실제로는 사람 고기였다. 진짜 바다거북 수프 맛을 확인하고 진실을 깨달아 자살했다.',
     explanation: '이 문제는 대표적인 바다거북 수프(추리 게임) 문제입니다.',
     rules: '스무고개 형식으로 진행합니다. 제가 드리는 답변은 "예", "아니오", 또는 "정답과 직접적인 관련은 없습니다." 세 가지입니다. 질문을 통해 단서를 얻어 사건의 전말을 맞춰보세요!\n\n예시 질문:\n- 남자는 식당에 혼자 갔나요?\n- 수프에 이상한 것이 들어 있었나요?',
-    image: 'https://source.unsplash.com/featured/400x250/?turtle,soup,mystery'
+    image: 'https://source.unsplash.com/featured/400x250/?turtle,soup,mystery',
+    hints: [
+      "남자는 과거에 비슷한 음식을 먹은 경험이 있나요?",
+      "수프의 재료와 관련된 단서가 중요합니다.",
+      "남자가 자살한 이유는 수프 맛 때문만은 아닙니다."
+    ]
   },
   {
     id: '2',

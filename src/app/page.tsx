@@ -21,13 +21,19 @@ function ChatPageContent() {
     messages,
     questionCount,
     finished,
+    usedHintsMap, // Zustand 스토어에서 가져옴
     setScenario,
     addMessage,
     setFinished,
+    useHint, // Zustand 스토어 액션
+    loadInitialHints, // Zustand 스토어 액션
   } = useScenarioStore();
   const [loading, setLoading] = useState(false);
   const [recordSaved, setRecordSaved] = useState(false);
   const [showRestartModal, setShowRestartModal] = useState(false);
+  // const [usedHintsCount, setUsedHintsCount] = useState(0); // 로컬 상태 대신 스토어 사용
+
+  const currentUsedHints = scenario ? usedHintsMap[scenario.id] || 0 : 0;
 
   // 시나리오 선택 안 했으면 /scenarios로 이동
   useEffect(() => {
@@ -38,12 +44,14 @@ function ChatPageContent() {
     const found = scenarios.find(s => s.id === scenarioId);
     if (found && (!scenario || scenario.id !== found.id)) {
       setScenario(found);
+      // 로컬 스토리지에서 해당 시나리오의 힌트 사용 횟수 불러오기
+      const storedHintsCount = parseInt(localStorage.getItem(`hints_${found.id}`) || '0', 10);
+      loadInitialHints(found.id, storedHintsCount);
+
       useScenarioStore.setState({ messages: [], questionCount: 0, finished: false });
       setRecordSaved(false);
       setShowRestartModal(false);
-      // addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}\n\n규칙: ${found.rules}` }); // 기존 방식
       
-      // 변경된 방식: 여러 메시지로 분리
       addMessage({ role: 'ai', content: `시나리오: ${found.title}\n\n${found.description}` });
       
       const rulesParts = found.rules.split('\n\n예시 질문:');
@@ -55,7 +63,7 @@ function ChatPageContent() {
         addMessage({ role: 'ai', content: exampleQuestions });
       }
     }
-  }, [scenarioId, router, scenario, setScenario, addMessage]);
+  }, [scenarioId, router, scenario, setScenario, addMessage, loadInitialHints]);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -99,7 +107,6 @@ function ChatPageContent() {
 
       addMessage({ role: 'ai', content: aiMsg });
       
-      // API 응답에서 "정답입니다!" 와 같은 특정 키워드를 확인하여 finished 상태 변경
       if (aiMsg.includes('정답입니다!')) { 
         setFinished(true);
       }
@@ -116,14 +123,6 @@ function ChatPageContent() {
 
   const handleRestart = () => {
     if (scenario) {
-      // 기존 메시지 설정 방식
-      // useScenarioStore.setState({
-      //   messages: [{ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}\n\n규칙: ${scenario.rules}` }],
-      //   questionCount: 0,
-      //   finished: false, 
-      // });
-
-      // 변경된 방식: 여러 메시지로 분리하여 설정
       const initialMessages: { role: 'ai' | 'user'; content: string }[] = [];
       initialMessages.push({ role: 'ai', content: `시나리오: ${scenario.title}\n\n${scenario.description}` });
       
@@ -141,6 +140,8 @@ function ChatPageContent() {
         questionCount: 0,
         finished: false, 
       });
+      localStorage.setItem(`hints_${scenario.id}`, '0'); // 로컬 스토리지 힌트 횟수 초기화
+      loadInitialHints(scenario.id, 0); // Zustand 스토어 힌트 횟수 초기화
       setRecordSaved(false); 
       setShowRestartModal(false); 
     }
@@ -150,11 +151,28 @@ function ChatPageContent() {
     router.push('/scenarios');
   };
 
+  const handleHint = () => {
+    if (!scenario || !scenario.hints || scenario.hints.length === 0) {
+      addMessage({ role: 'ai', content: '이 시나리오에는 사용할 수 있는 힌트가 없습니다.' });
+      return;
+    }
+    if (currentUsedHints >= scenario.hints.length) {
+      addMessage({ role: 'ai', content: '모든 힌트를 사용했습니다.' });
+      return;
+    }
+
+    const hintToShow = scenario.hints[currentUsedHints];
+    addMessage({ role: 'ai', content: `힌트: ${hintToShow}` });
+    useHint(scenario.id); // Zustand 스토어 액션 호출
+    localStorage.setItem(`hints_${scenario.id}`, (currentUsedHints + 1).toString()); // 로컬 스토리지 업데이트
+  };
+
   if (!scenario) {
-    // scenarioId가 없으면 위의 useEffect에서 /scenarios로 리다이렉트됩니다.
-    // scenarioId가 있지만 아직 scenario가 설정되지 않은 초기 상태일 수 있습니다.
     return <div className="flex h-screen items-center justify-center">Loading scenario...</div>;
   }
+
+  const totalHints = scenario.hints ? scenario.hints.length : 0;
+  const canUseHint = scenario.hints && scenario.hints.length > 0 && currentUsedHints < scenario.hints.length;
 
   return (
     <div className="flex flex-col h-screen bg-gray-50 dark:bg-gray-800">
@@ -175,7 +193,18 @@ function ChatPageContent() {
         }
         <div ref={chatEndRef} />
       </main>
-      <ChatInput onSend={handleSend} disabled={loading || finished} />
+      <div className="p-4 border-t border-gray-200 dark:border-gray-600">
+        {scenario.hints && scenario.hints.length > 0 && (
+          <button
+            onClick={handleHint}
+            disabled={!canUseHint || loading || finished}
+            className="mb-2 w-full px-4 py-2 border border-blue-500 text-blue-500 rounded hover:bg-blue-50 disabled:opacity-50 disabled:cursor-not-allowed dark:border-blue-400 dark:text-blue-400 dark:hover:bg-blue-900"
+          >
+            힌트 보기 ({currentUsedHints}/{totalHints} 사용됨)
+          </button>
+        )}
+        <ChatInput onSend={handleSend} disabled={loading || finished} />
+      </div>
       {showRestartModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-xl text-center">
