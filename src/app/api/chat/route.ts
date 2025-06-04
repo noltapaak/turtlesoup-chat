@@ -97,10 +97,8 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
 
     if (!res.ok || data.error) {
       console.error('OpenAI API Error Response:', data);
-      // API 에러 메시지를 그대로 반환하거나, 더 사용자 친화적인 메시지로 가공
-      const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.';
-      // 실제 사용자에게 OpenAI의 상세 에러 메시지를 그대로 노출하는 것은 좋지 않을 수 있습니다.
-      // return NextResponse.json({ error: errorMessage, details: data.error }, { status: res.status || 500 });
+      // API 에러 메시지를 로깅은 하되, 사용자에게는 일반적인 메시지 반환
+      // const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.'; // 이 줄을 주석 처리하거나 삭제
       return NextResponse.json({ error: "AI 응답 생성 중 문제가 발생했습니다. 다시 시도해주세요." }, { status: res.status || 500 });
     }
     
@@ -122,11 +120,11 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
 
   } catch (error: unknown) {
     console.error('API Route CATCH Block Error:', error);
-    let errorMessage = 'Internal server error in catch block';
-    if (error instanceof Error) {
-      errorMessage = error.message;
-    }
-    // 사용자에게 노출되는 에러 메시지
+    // 상세 에러는 로깅하되, 사용자에게는 일반적인 메시지 반환
+    // let errorMessage = 'Internal server error in catch block'; // 이 줄을 주석 처리하거나 삭제
+    // if (error instanceof Error) { // 이 줄을 주석 처리하거나 삭제
+    //   errorMessage = error.message; // 이 줄을 주석 처리하거나 삭제
+    // }
     return NextResponse.json({ error: "요청 처리 중 서버에서 오류가 발생했습니다." }, { status: 500 });
   }
 } 
