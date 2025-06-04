@@ -70,7 +70,10 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
       { role: 'system', content: systemMessageContent },
       // 이전 대화 내용을 시스템 프롬프트에 포함시켰으므로, 여기서는 현재 사용자 프롬프트만 전달
       // 필요하다면, 이전 대화 내용을 여기에 다시 포함시킬 수도 있지만, 시스템 프롬프트 내의 대화 내용과 중복될 수 있음
-      ...(prevMessages || []).map(msg => ({ role: msg.role as 'user' | 'assistant', content: msg.content })), // API는 'ai' 대신 'assistant'를 사용
+      ...(prevMessages || []).map(msg => ({
+        role: msg.role === 'ai' ? 'assistant' : msg.role as 'user',
+        content: msg.content
+      })),
       { role: 'user', content: prompt },
     ];
 
@@ -83,9 +86,9 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
       },
       body: JSON.stringify({
         model: 'gpt-4', 
-        messages: messagesToOpenAI, // 수정된 메시지 배열 전달
-        max_tokens: 200, // 답변 길이를 고려하여 조정
-        temperature: 0.7, // 말투 개선을 위해 temperature를 약간 높임 (기존 0.1에서 0.7로)
+        messages: messagesToOpenAI, 
+        max_tokens: 200, 
+        temperature: 0.7, 
       }),
     });
 
@@ -94,8 +97,11 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
 
     if (!res.ok || data.error) {
       console.error('OpenAI API Error Response:', data);
-      const errorMessage = data.error?.message || 'OpenAI API error after request';
-      return NextResponse.json({ error: errorMessage, details: data.error }, { status: res.status || 500 });
+      // API 에러 메시지를 그대로 반환하거나, 더 사용자 친화적인 메시지로 가공
+      const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.';
+      // 실제 사용자에게 OpenAI의 상세 에러 메시지를 그대로 노출하는 것은 좋지 않을 수 있습니다.
+      // return NextResponse.json({ error: errorMessage, details: data.error }, { status: res.status || 500 });
+      return NextResponse.json({ error: "AI 응답 생성 중 문제가 발생했습니다. 다시 시도해주세요." }, { status: res.status || 500 });
     }
     
     const aiResponse = data.choices?.[0]?.message?.content || '';
@@ -120,6 +126,7 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
     if (error instanceof Error) {
       errorMessage = error.message;
     }
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    // 사용자에게 노출되는 에러 메시지
+    return NextResponse.json({ error: "요청 처리 중 서버에서 오류가 발생했습니다." }, { status: 500 });
   }
 } 
