@@ -17,7 +17,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 bg-white dark:bg-gray-700 shadow flex items-center">
+    <form onSubmit={handleSubmit} className="flex items-center gap-2">
       <input
         type="text"
         value={value}
@@ -29,7 +29,7 @@ const ChatInput: React.FC<ChatInputProps> = ({ onSend, disabled }) => {
       <button
         type="submit"
         disabled={disabled || !value.trim()}
-        className="ml-2 px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500"
+        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 disabled:opacity-50 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-500 whitespace-nowrap"
       >
         전송
       </button>
