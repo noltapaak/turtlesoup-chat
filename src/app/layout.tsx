@@ -7,7 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 // import Link from "next/link"; // 주석 처리 또는 삭제
 
 const pretendard = localFont({
-  src: '../../node_modules/pretendard/dist/web/variable/PretendardVariable.woff2',
+  src: '../fonts/PretendardVariable.woff2',
   display: 'swap',
   weight: '45 920',
   variable: '--font-pretendard',
