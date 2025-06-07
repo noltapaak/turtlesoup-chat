@@ -10,7 +10,7 @@ const pretendard = localFont({
   src: '../fonts/PretendardVariable.woff2',
   display: 'swap',
   weight: '45 920',
-  variable: '--font-pretendard',
+  // variable: '--font-pretendard', // 변수 방식 대신 클래스 직접 적용
 })
 
 export const metadata: Metadata = {
@@ -24,8 +24,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko" className={`dark ${pretendard.variable}`}>
-      <body className="antialiased bg-white dark:bg-gray-900 font-sans">
+    <html lang="ko" className="dark">
+      <body className={`${pretendard.className} antialiased bg-white dark:bg-gray-900`}>
         {/* <nav className="p-4 bg-gray-100 dark:bg-gray-800 shadow">
           <ul className="flex space-x-4">
             <li><Link href="/" className="text-blue-600 dark:text-blue-400 hover:underline">채팅</Link></li>
