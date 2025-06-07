@@ -2,8 +2,25 @@
 import Link from 'next/link';
 // import Image from 'next/image'; // next/image 사용하지 않음
 import { scenarios } from '../../data/scenarios';
+import { useRouter } from 'next/navigation';
+
+// 난이도에 따른 스타일을 반환하는 헬퍼 함수
+const getDifficultyChipClass = (difficulty: '상' | '중' | '하') => {
+  switch (difficulty) {
+    case '하':
+      return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300';
+    case '중':
+      return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300';
+    case '상':
+      return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300';
+    default:
+      return 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200';
+  }
+};
 
 export default function ScenariosPage() {
+  const router = useRouter();
+
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-800 min-h-screen">
       <h1 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">채팅형 추리게임</h1>
@@ -23,9 +40,16 @@ export default function ScenariosPage() {
                   />
                 </div>
               )}
-              <div className="p-4">
-                <h2 className="text-xl font-semibold mb-2 text-gray-700 dark:text-gray-200">{scenario.title}</h2>
-                <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-3">
+              <div className="p-5">
+                <div className="flex justify-between items-center mb-2">
+                  <h5 className="text-xl font-bold tracking-tight text-gray-900 dark:text-white">
+                    {scenario.title}
+                  </h5>
+                  <span className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${getDifficultyChipClass(scenario.difficulty)}`}>
+                    난이도 {scenario.difficulty}
+                  </span>
+                </div>
+                <p className="font-normal text-gray-700 dark:text-gray-400 line-clamp-3" style={{ minHeight: '60px' }}>
                   {scenario.description}
                 </p>
               </div>
