@@ -2,7 +2,7 @@
 import Link from 'next/link';
 // import Image from 'next/image'; // next/image 사용하지 않음
 import { scenarios } from '../../data/scenarios';
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 
 // 난이도에 따른 스타일을 반환하는 헬퍼 함수
 const getDifficultyChipClass = (difficulty: '상' | '중' | '하') => {
@@ -19,7 +19,7 @@ const getDifficultyChipClass = (difficulty: '상' | '중' | '하') => {
 };
 
 export default function ScenariosPage() {
-  const router = useRouter();
+  // const router = useRouter();
 
   return (
     <div className="p-6 bg-gray-50 dark:bg-gray-800 min-h-screen">
