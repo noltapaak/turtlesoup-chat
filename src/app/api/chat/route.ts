@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Scenario } from '../../../data/scenarios'; // 시나리오 타입 경로 수정 필요 시 확인
+import Groq from 'groq-sdk';
+import { ChatCompletionMessageParam } from 'groq-sdk/resources/chat/completions';
 
 export const dynamic = 'force-dynamic'; // 항상 동적으로 실행되도록 설정
 
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
+
 export async function POST(req: NextRequest) {
-  console.log('API Route /api/chat called'); // 함수 호출 로그
+  console.log('API Route /api/chat called with Groq');
   try {
     const { prompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
     console.log('Received prompt:', prompt);
@@ -17,10 +23,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing prompt or scenario' }, { status: 400 });
     }
 
-    const apiKey = process.env.OPENAI_API_KEY;
+    const apiKey = process.env.GROQ_API_KEY;
     if (!apiKey) {
-      console.error('OPENAI_API_KEY is not set');
-      return NextResponse.json({ error: 'Server configuration error: API key not set' }, { status: 500 });
+      console.error('GROQ_API_KEY is not set');
+      return NextResponse.json({ error: 'Server configuration error: GROQ_API_KEY not set' }, { status: 500 });
     }
 
     let systemMessageContent = '';
@@ -86,41 +92,23 @@ export async function POST(req: NextRequest) {
     // 대화가 길어질 경우를 대비해, 최근 대화 내용 일부와 현재 프롬프트만 전송
     const recentMessages = (prevMessages || []).slice(-4); // 최근 4개의 메시지만 포함 (조절 가능)
 
-    const messagesToOpenAI = [
+    const messagesToGroq: ChatCompletionMessageParam[] = [
       { role: 'system', content: systemMessageContent },
       ...recentMessages.map(msg => ({
-        role: msg.role === 'ai' ? 'assistant' : (msg.role as 'user' | 'system'),
+        role: msg.role === 'ai' ? 'assistant' : 'user' as 'assistant' | 'user',
         content: msg.content
       })),
       { role: 'user', content: prompt },
     ];
 
-    console.log('Sending request to OpenAI API with messages:', JSON.stringify(messagesToOpenAI, null, 2));
-    const res = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        model: 'gpt-3.5-turbo', 
-        messages: messagesToOpenAI, 
-        max_tokens: 200, 
-        temperature: 0.7, 
-      }),
+    const chatCompletion = await groq.chat.completions.create({
+        messages: messagesToGroq,
+        model: 'llama3-8b-8192',
+        temperature: 0.7,
+        max_tokens: 200,
     });
-
-    console.log('OpenAI API response status:', res.status);
-    const data = await res.json();
-
-    if (!res.ok || data.error) {
-      console.error('OpenAI API Error Response:', data);
-      const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.';
-      return NextResponse.json({ error: `AI 응답 생성 중 문제가 발생했습니다: ${errorMessage}` }, { status: res.status || 500 });
-    }
     
-    const aiResponse = data.choices?.[0]?.message?.content || '';
-    console.log('Raw AI response:', aiResponse);
+    const aiResponse = chatCompletion.choices[0]?.message?.content || '';
     
     // AI 응답 후처리 (예: "예."만 있는 경우 방지) - 시스템 프롬프트가 잘 작동하면 필요 없을 수 있음
     // 하지만 안전장치로 간단한 확인 로직 추가 가능
