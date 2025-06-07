@@ -100,7 +100,7 @@ export async function POST(req: NextRequest) {
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: 'gpt-4', 
+        model: 'gpt-3.5-turbo', 
         messages: messagesToOpenAI, 
         max_tokens: 200, 
         temperature: 0.7, 
