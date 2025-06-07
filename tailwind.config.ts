@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss" with { "resolution-mode": "require" };
+import defaultTheme from 'tailwindcss/defaultTheme';
 
 const config: Config = {
   darkMode: 'class', // 다크 모드 클래스 전략 활성화
@@ -10,7 +11,7 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-pretendard)'],
+        sans: ['var(--font-pretendard)', ...defaultTheme.fontFamily.sans],
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
