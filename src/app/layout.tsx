@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from "@vercel/speed-insights/next";
 // import Link from "next/link"; // 주석 처리 또는 삭제
 
 const geistSans = Geist({
@@ -36,6 +37,7 @@ export default function RootLayout({
         </nav> */}
         {children}
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );
