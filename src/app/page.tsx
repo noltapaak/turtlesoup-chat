@@ -109,7 +109,7 @@ function ChatPageContent() {
 
       addMessage({ role: 'ai', content: aiMsg });
       
-      if (aiMsg.includes('정답입니다!')) { 
+      if (aiMsg.startsWith('정답입니다')) { 
         setFinished(true);
       }
     } catch (e: unknown) {

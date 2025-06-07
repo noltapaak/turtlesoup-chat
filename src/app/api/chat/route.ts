@@ -54,7 +54,7 @@ export async function POST(req: NextRequest) {
 **추가 응답 스타일 가이드:**
 *   **극도의 간결함 및 객관성 유지 (50자 이내)**: 모든 답변은 사실 전달에만 집중하며, 50자를 넘지 않도록 합니다. 감정 표현이나 격려, 비유 등은 완전히 배제합니다.
 *   **정답 확인 신중함**: 사용자가 정답과 매우 유사한 내용을 언급하더라도, **사용자가 명확하게 \"${scenario.answer}\" (이)라고 확신에 차서 말하거나, 또는 게임의 모든 핵심적인 요소들을 정확히 설명하기 전까지는 섣불리 정답이라고 판단하지 마세요.** 사용자가 정답을 언급해도, \"그것이 정답입니다.\" 와 같이 간결하게만 반응합니다.
-*   **정답 판정**: 사용자가 스스로 \"${scenario.answer}\"이라고 명확히 외치거나, 게임의 핵심 단서들을 모두 조합하여 완벽하게 설명했을 때만, \"정답입니다. ${scenario.explanation || scenario.answer}\"처럼 해설을 제공해주세요. **그 이전에는 절대 정답이나 해설을 먼저 공개하지 마세요.** (정답 및 해설은 50자 제한 예외)
+*   **정답 판정**: 사용자가 스스로 \"${scenario.answer}\"이라고 명확히 외치거나, 게임의 핵심 단서들을 모두 조합하여 완벽하게 설명했을 때만, **반드시 \"정답입니다.\" 라는 문장으로 시작하고, 그 뒤에 해설을 덧붙여주세요.** (예: \"정답입니다. ${scenario.explanation || scenario.answer}\"). **그 이전에는 절대 정답이나 해설을 먼저 공개하지 마세요.** (정답 및 해설은 50자 제한 예외)
 
 **현재까지의 대화 내용:**
 ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: ${msg.content}`).join('\\n')}
@@ -66,12 +66,13 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
     //     console.log('User may have guessed the answer directly.');
     // }
 
+    // 대화가 길어질 경우를 대비해, 최근 대화 내용 일부와 현재 프롬프트만 전송
+    const recentMessages = (prevMessages || []).slice(-4); // 최근 4개의 메시지만 포함 (조절 가능)
+
     const messagesToOpenAI = [
       { role: 'system', content: systemMessageContent },
-      // 이전 대화 내용을 시스템 프롬프트에 포함시켰으므로, 여기서는 현재 사용자 프롬프트만 전달
-      // 필요하다면, 이전 대화 내용을 여기에 다시 포함시킬 수도 있지만, 시스템 프롬프트 내의 대화 내용과 중복될 수 있음
-      ...(prevMessages || []).map(msg => ({
-        role: msg.role === 'ai' ? 'assistant' : msg.role as 'user',
+      ...recentMessages.map(msg => ({
+        role: msg.role === 'ai' ? 'assistant' : (msg.role as 'user' | 'system'),
         content: msg.content
       })),
       { role: 'user', content: prompt },
@@ -97,9 +98,8 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
 
     if (!res.ok || data.error) {
       console.error('OpenAI API Error Response:', data);
-      // API 에러 메시지를 로깅은 하되, 사용자에게는 일반적인 메시지 반환
-      // const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.'; // 이 줄을 주석 처리하거나 삭제
-      return NextResponse.json({ error: "AI 응답 생성 중 문제가 발생했습니다. 다시 시도해주세요." }, { status: res.status || 500 });
+      const errorMessage = data.error?.message || 'OpenAI API 요청 중 알 수 없는 오류가 발생했습니다.';
+      return NextResponse.json({ error: `AI 응답 생성 중 문제가 발생했습니다: ${errorMessage}` }, { status: res.status || 500 });
     }
     
     const aiResponse = data.choices?.[0]?.message?.content || '';
@@ -120,11 +120,10 @@ ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: 
 
   } catch (error: unknown) {
     console.error('API Route CATCH Block Error:', error);
-    // 상세 에러는 로깅하되, 사용자에게는 일반적인 메시지 반환
-    // let errorMessage = 'Internal server error in catch block'; // 이 줄을 주석 처리하거나 삭제
-    // if (error instanceof Error) { // 이 줄을 주석 처리하거나 삭제
-    //   errorMessage = error.message; // 이 줄을 주석 처리하거나 삭제
-    // }
-    return NextResponse.json({ error: "요청 처리 중 서버에서 오류가 발생했습니다." }, { status: 500 });
+    let errorMessage = 'Internal server error in catch block';
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+    return NextResponse.json({ error: `요청 처리 중 서버에서 오류가 발생했습니다: ${errorMessage}` }, { status: 500 });
   }
 } 
