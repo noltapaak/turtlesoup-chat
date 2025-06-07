@@ -74,8 +74,7 @@ export async function POST(req: NextRequest) {
 
       **현재까지의 대화 내용:**
       ${(prevMessages || []).map(msg => `${msg.role === 'user' ? '사용자' : 'AI'}: ${msg.content}`).join('\\n')}
-      
-      위 가이드라인, 특히 **질문의 의도와 맥락 파악** 및 **모호한 질문에 대한 처리 방식**을 반드시 지켜서 다음 질문에 답변해주세요.`;
+      `;
     }
     
     // 사용자가 직접 정답을 입력했는지 간단히 확인하는 로직은 AI 판단에 맡기므로 주석 처리 또는 삭제합니다.
