@@ -129,8 +129,44 @@ export async function POST(req: NextRequest) {
           }
         });
       } else {
-        // AI가 오답으로 판정한 경우, 키워드 체크로 힌트 제공
-        const matchedKeywords = keywords.filter(keyword => prompt.includes(keyword));
+        // AI가 오답으로 판정한 경우, AI를 이용해 키워드 체크로 힌트 제공
+        const hintSystemMessage = `You are a hint generation assistant for a mystery game. Your task is to compare the player's guess with a list of secret keywords and identify which keywords are mentioned or semantically implied in the guess.
+
+Secret Keywords: [${keywords.join(', ')}]
+
+Player's Guess: "${prompt}"
+
+Analyze the player's guess. For each secret keyword, determine if its meaning is present in the guess. The exact word doesn't have to be there; synonyms or strong contextual implications are sufficient. For example, if a keyword is '인육' (human flesh), a guess containing '사람 고기' (human meat) should be considered a match.
+
+Your output MUST be a JSON array of strings, containing only the keywords from the original list that were matched. For example: ["과거", "인육"]
+
+If no keywords are matched, return an empty array [].`;
+
+        const hintCompletion = await groq.chat.completions.create({
+          messages: [
+            { role: 'system', content: hintSystemMessage },
+            { role: 'user', content: prompt }
+          ],
+          model: 'llama3-8b-8192',
+          temperature: 0,
+          max_tokens: 100, // JSON 배열을 받기 위해 충분한 토큰 할당
+          response_format: { type: "json_object" },
+        });
+
+        let matchedKeywords: string[] = [];
+        try {
+          const jsonResponse = JSON.parse(hintCompletion.choices[0]?.message?.content || '[]');
+          // AI가 임의의 key로 감싸서 반환할 경우를 대비
+          const arrayCandidate = Array.isArray(jsonResponse) ? jsonResponse : Object.values(jsonResponse)[0];
+          if (Array.isArray(arrayCandidate)) {
+            matchedKeywords = arrayCandidate.filter(item => typeof item === 'string');
+          }
+        } catch (e) {
+          console.error("Failed to parse hint JSON from AI:", e);
+          // JSON 파싱 실패 시, 기존의 단순 포함 로직으로 대체
+          matchedKeywords = keywords.filter(keyword => prompt.includes(keyword));
+        }
+
         let hint = '';
         if (matchedKeywords.length > 0) {
           hint = `아쉽지만 정답이 아니에요. 핵심 키워드 ${keywords.length}개 중 ${matchedKeywords.length}개를 맞추셨어요. (맞춘 키워드: ${matchedKeywords.join(', ')})`;

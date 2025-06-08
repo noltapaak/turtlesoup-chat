@@ -27,7 +27,7 @@ export const scenarios: Scenario[] = [
       "남자가 자살한 이유는 수프 맛 때문만은 아닙니다."
     ],
     difficulty: '상',
-    keywords: ['과거', '조난', '사람 고기', '인육', '레스토랑'],
+    keywords: ['과거', '조난', '인육'],
     exampleQuestions: [
       '남자는 식당에 혼자 갔나요?',
       '수프에 이상한 것이 들어 있었나요?',
@@ -65,7 +65,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['시각장애인', '안내원', '엘리베이터', '정전'],
+    keywords: ['시각장애인', '엘리베이터', '정전'],
     exampleQuestions: [
       '남자는 엘리베이터에 혼자 있었나요?',
       '정전은 오랫동안 지속되었나요?',
@@ -122,7 +122,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['산장', '눈사태', '자연재해'],
+    keywords: ['산장', '눈사태'],
     exampleQuestions: [
       '남자는 살해당했나요?',
       '산장에는 남자 혼자 있었나요?',
@@ -141,7 +141,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '상',
-    keywords: ['음악', '죽음'],
+    keywords: ['곡예사', '음악', '칼', '타이밍'],
     exampleQuestions: [
       '여자는 음악가였나요?',
       '음악은 라디오에서 나왔나요?',
@@ -160,7 +160,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '상',
-    keywords: ['알약', '독약'],
+    keywords: ['독약', '협박범', '시한부'],
     exampleQuestions: [
       '남자는 스스로 약을 선택했나요?',
       '알약의 색깔이 달랐나요?',
@@ -179,7 +179,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['자동차', '충격'],
+    keywords: ['자동차', '지붕', '추락'],
     exampleQuestions: [
       '남자는 차 안에 있었나요?',
       '차는 움직이고 있었나요?',
@@ -198,7 +198,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['고드름', '창문'],
+    keywords: ['고드름', '무기', '물'],
     exampleQuestions: [
       '사업가는 혼자 있었나요?',
       '깨진 유리는 창문 유리인가요?',
@@ -217,7 +217,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '상',
-    keywords: ['전화', '물고기'],
+    keywords: ['낚시', '물고기', '자랑'],
     exampleQuestions: [
       '남자는 전화를 하고 있었나요?',
       '물고기는 살아 있었나요?',
@@ -236,7 +236,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['숲', '오두막'],
+    keywords: ['비행기', '동체', '추락'],
     exampleQuestions: [
       '다섯 명은 서로 아는 사이였나요?',
       '오두막은 사람이 사는 곳이었나요?',
@@ -255,7 +255,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['엘리베이터', '우산'],
+    keywords: ['키', '우산', '버튼'],
     exampleQuestions: [
       '남자는 혼자 살았나요?',
       '엘리베이터에 다른 사람이 있었나요?',
@@ -274,7 +274,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '상',
-    keywords: ['열기구', '추락'],
+    keywords: ['열기구', '추락', '성냥개비'],
     exampleQuestions: [
       '남자는 자살했나요?',
       '건초더미는 사건과 관련이 있나요?',
@@ -293,7 +293,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['경비원', '금고'],
+    keywords: ['경비원', '장난', '총'],
     exampleQuestions: [
       '경비원들은 무기를 가지고 있었나요?',
       '금고 안에는 무엇이 들어있었나요?',
@@ -312,7 +312,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['선장', '배', '침몰'],
+    keywords: ['선장', '탈출', '구명보트'],
     exampleQuestions: [
       '생존자는 남자였나요?',
       '배는 폭풍을 만났나요?',
@@ -331,7 +331,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '상',
-    keywords: ['톱밥', '침대', '심장마비'],
+    keywords: ['난쟁이', '침대', '톱밥', '공포'],
     exampleQuestions: [
       '남자는 목수였나요?',
       '톱밥은 어떤 종류의 나무였나요?',
@@ -350,7 +350,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['선물', '신발'],
+    keywords: ['외다리', '신발', '선물'],
     exampleQuestions: [
       '선물은 위험한 물건이었나요?',
       '남자는 선물을 받고 화가 났나요?',
@@ -369,7 +369,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['사과', '독'],
+    keywords: ['연극', '배우', '질식', '사과'],
     exampleQuestions: [
       '사과는 독이 있었나요?',
       '남자는 사과를 먹었나요?',
@@ -388,7 +388,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['비행기', '추락', '조종사'],
+    keywords: ['시뮬레이터', '게임', '소음', '경찰'],
     exampleQuestions: [
       '조종사는 범죄를 저질렀나요?',
       '비행기에는 다른 승객이 있었나요?',
