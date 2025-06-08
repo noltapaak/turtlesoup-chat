@@ -20,16 +20,10 @@ function isSubjectiveQuestion(prompt: string): boolean {
 export async function POST(req: NextRequest) {
   console.log('API Route /api/chat called with Groq');
   try {
-    const { prompt, scenario, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
+    const { prompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
     console.log('Received prompt:', prompt);
     console.log('Received scenario ID:', scenario?.id);
     console.log('Is this a guess?', isGuess);
-
-    // 1단계: 서버에서 주관식 질문 사전 필터링
-    if (!isGuess && isSubjectiveQuestion(prompt)) {
-      console.log('Subjective question detected, responding without calling AI.');
-      return NextResponse.json({ response: "죄송하지만 '예' 또는 '아니오'로 답할 수 있는 질문으로 다시 물어봐 주시겠어요?" });
-    }
 
     if (!prompt || !scenario) {
       console.error('Missing prompt or scenario');
@@ -42,11 +36,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error: GROQ_API_KEY not set' }, { status: 500 });
     }
 
-    let systemMessageContent = '';
-
+    // '정답 외치기'와 '일반 질문' 로직을 완전히 분리하여 처리합니다.
     if (isGuess) {
       // 정답 추측 시 시스템 프롬프트
-      systemMessageContent = `당신은 추리 게임의 정답 판정 AI입니다. 사용자가 정답을 추측했습니다. 주어진 정답과 사용자의 입력을 비교하여 판정해주세요.
+      const systemMessageContent = `당신은 추리 게임의 정답 판정 AI입니다. 사용자가 정답을 추측했습니다. 주어진 정답과 사용자의 입력을 비교하여 판정해주세요.
 
       - **정답:** "${scenario.answer}"
       - **정답 설명:** "${scenario.explanation || '자세한 해설이 없습니다.'}"
@@ -59,67 +52,84 @@ export async function POST(req: NextRequest) {
          - "사건의 핵심 인물이나 대상이 명확하지 않습니다."
          - "사건의 중요한 과정 일부가 빠져있습니다."
          - "추측하신 내용과 실제 사실은 다릅니다."`;
-    } else {
-      // 2단계: AI의 역할을 '판정'으로 제한하는 새로운 시스템 프롬프트
-      systemMessageContent = `You are a fact-checking AI.
-      The TRUTH is: "${scenario.answer}".
       
-      Analyze the user's question: "${prompt}"
-      
-      Based on the TRUTH, is the user's question True, False, or Irrelevant?
-      - If the question is true according to the TRUTH, respond with ONLY the single word: YES
-      - If the question is false according to the TRUTH, respond with ONLY the single word: NO
-      - If the question is not related to the TRUTH, respond with ONLY the single word: IRRELEVANT
-      
-      Your entire response MUST be a single word. Do not add any explanation or punctuation.`;
+      const chatCompletion = await groq.chat.completions.create({
+          messages: [
+            { role: 'system', content: systemMessageContent },
+            ...(prevMessages || []).slice(-4).map(msg => ({
+              role: msg.role === 'ai' ? 'assistant' : 'user' as 'assistant' | 'user',
+              content: msg.content
+            })),
+            { role: 'user', content: prompt },
+          ],
+          model: 'llama3-8b-8192',
+          temperature: 0.7,
+          max_tokens: 200, // 정답 설명을 위해 토큰을 넉넉하게 설정
+      });
+
+      const finalResponse = chatCompletion.choices[0]?.message?.content || "오류가 발생했습니다. 다시 시도해주세요.";
+      console.log(`AI raw response (guess): ${finalResponse}`);
+      return NextResponse.json({ response: finalResponse });
     }
+
+    // --- 일반 질문 처리 로직 ---
+
+    // 1단계: 서버에서 주관식 질문 사전 필터링
+    if (isSubjectiveQuestion(prompt)) {
+      console.log('Subjective question detected, responding without calling AI.');
+      return NextResponse.json({ response: "죄송하지만 '예' 또는 '아니오'로 답할 수 있는 질문으로 다시 물어봐 주시겠어요?" });
+    }
+    
+    // 2단계: AI의 역할을 '판정'으로 제한하는 시스템 프롬프트
+    const systemMessageContent = `You are a fact-checking AI.
+    The TRUTH is: "${scenario.answer}".
+    
+    Analyze the user's question: "${prompt}"
+    
+    Based on the TRUTH, is the user's question True, False, or Irrelevant?
+    - If the question is true according to the TRUTH, respond with ONLY the single word: YES
+    - If the question is false according to the TRUTH, respond with ONLY the single word: NO
+    - If the question is not related to the TRUTH, respond with ONLY the single word: IRRELEVANT
+    
+    Your entire response MUST be a single word. Do not add any explanation or punctuation.`;
     
     const messagesToGroq: ChatCompletionMessageParam[] = [
       { role: 'system', content: systemMessageContent },
-      // 이전 대화 내용은 AI의 판단을 방해하므로 제거합니다.
-      // AI는 오직 '정답'과 '현재 질문'만 보고 판정해야 합니다.
       { role: 'user', content: prompt },
     ];
 
     const chatCompletion = await groq.chat.completions.create({
         messages: messagesToGroq,
         model: 'llama3-8b-8192',
-        temperature: 0, // AI의 답변을 최대한 일관되게 만들기 위해 0으로 설정
-        max_tokens: 10, // YES, NO, IRRELEVANT 중 하나만 받으므로 토큰을 최소화
+        temperature: 0, 
+        max_tokens: 10,
     });
     
     const aiResponse = chatCompletion.choices[0]?.message?.content?.trim().toUpperCase() || '';
     
-    // 3단계: AI의 판정을 기반으로 서버에서 최종 답변 생성
+    // 3단계: AI의 판정을 기반으로 서버에서 최종 답변 생성 (고도화된 버전)
     let finalResponse = '';
-
-    if (isGuess) {
-      // 정답 추측에 대한 응답은 AI가 생성한 내용을 그대로 사용
-      finalResponse = chatCompletion.choices[0]?.message?.content || "오류가 발생했습니다. 다시 시도해주세요.";
-    } else {
-      // 일반 질문에 대한 응답은 서버에서 직접 조립
-      switch (aiResponse) {
-        case 'YES':
-          // 사용자의 질문을 자연스럽게 활용하여 긍정문 생성
-          if (prompt.endsWith('나요?')) {
-            const questionBody = prompt.slice(0, -3); // "했나요?" -> "했"
-            finalResponse = `네, 맞습니다. ${questionBody}했습니다.`; // "했습니다"
-          } else {
-            finalResponse = '네, 맞습니다.';
-          }
-          break;
-        case 'NO':
-          finalResponse = '아니요, 그렇지 않습니다.';
-          break;
-        case 'IRRELEVANT':
-          finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
-          break;
-        default:
-          // AI가 예상치 못한 답변을 할 경우를 대비한 안전장치
-          console.warn("Unexpected AI response, defaulting to 'irrelevant'. Response:", aiResponse);
-          finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
-          break;
-      }
+    switch (aiResponse) {
+      case 'YES':
+        const questionBody = prompt.slice(0, -1); // '?' 제거
+        if (questionBody.endsWith('나요')) { // ex: ~했나요?, ~있나요?
+          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -1)}습니다.`;
+        } else if (questionBody.endsWith('인가요')) { // ex: ~인가요?
+          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}입니다.`;
+        } else {
+          finalResponse = '네, 맞습니다.'; // 기타 긍정 답변
+        }
+        break;
+      case 'NO':
+        finalResponse = '아니요, 그렇지 않습니다.';
+        break;
+      case 'IRRELEVANT':
+        finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
+        break;
+      default:
+        console.warn("Unexpected AI response, defaulting to 'irrelevant'. Response:", aiResponse);
+        finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
+        break;
     }
 
     console.log(`AI raw response: ${aiResponse}, Final server response: ${finalResponse}`);
