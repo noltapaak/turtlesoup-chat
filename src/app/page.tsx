@@ -152,13 +152,17 @@ function ChatPageContent() {
       }
 
       const data = await response.json();
-      const aiMsg = data.response;
-
-      addMessage({ role: 'ai', content: aiMsg });
-
-      if (aiMsg.startsWith('정답입니다')) {
+      
+      if (data.response.isCorrect) {
+        // 정답 처리
         setFinished(true);
+        addMessage({ role: 'ai', content: `정답입니다!\n\n${data.response.answer}\n\n해설: ${data.response.explanation}` });
+        setShowRestartModal(true); // 게임 재시작/홈으로 가기 모달 표시
+      } else {
+        // 오답 처리 (힌트 메시지 표시)
+        addMessage({ role: 'ai', content: data.response.hint });
       }
+
     } catch (e: unknown) {
       console.error(e);
       let errorMessage = 'AI 응답 오류가 발생했습니다.';
