@@ -12,6 +12,9 @@ const DialogTrigger = DialogPrimitive.Trigger
 
 const DialogPortal = DialogPrimitive.Portal
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const DialogClose = DialogPrimitive.Close
+
 const DialogOverlay = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
