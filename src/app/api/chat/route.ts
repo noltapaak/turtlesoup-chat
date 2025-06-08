@@ -94,9 +94,32 @@ export async function POST(req: NextRequest) {
     // --- '정답 외치기' 처리 로직 ---
     if (isGuess) {
       const { keywords, answer, explanation } = scenario;
-      const matchedKeywords = keywords.filter(keyword => prompt.includes(keyword));
 
-      if (matchedKeywords.length === keywords.length) {
+      // 1. AI에게 의미적 유사도 판정 요청
+      const systemMessageForGuess = `당신은 추리 게임의 최종 판정관입니다. 플레이어의 최종 추리가 비밀 정답과 의미적으로 일치하는지 판별해야 합니다.
+
+**비밀 정답:** "${answer}"
+
+**플레이어의 추리:** "${prompt}"
+
+플레이어의 추리가 비밀 정답의 핵심 요소(인물, 장소, 사건, 동기 등)를 모두 포함하고, 내용이 의미적으로 거의 동일한가요? 단어나 표현이 달라도 의미만 맞으면 됩니다.
+
+오직 'YES' 또는 'NO'로만 대답하세요.`;
+
+      const guessCompletion = await groq.chat.completions.create({
+        messages: [
+          { role: 'system', content: systemMessageForGuess },
+          { role: 'user', content: prompt }
+        ],
+        model: 'llama3-8b-8192',
+        temperature: 0,
+        max_tokens: 5,
+      });
+
+      const aiGuessResponse = guessCompletion.choices[0]?.message?.content?.trim().toUpperCase() || 'NO';
+
+      // 2. AI 판정 결과에 따라 분기 처리
+      if (aiGuessResponse === 'YES') {
         // 모든 키워드가 포함된 경우: 정답
         return NextResponse.json({
           response: {
@@ -106,7 +129,8 @@ export async function POST(req: NextRequest) {
           }
         });
       } else {
-        // 일부 키워드만 포함된 경우: 오답 및 힌트 제공
+        // AI가 오답으로 판정한 경우, 키워드 체크로 힌트 제공
+        const matchedKeywords = keywords.filter(keyword => prompt.includes(keyword));
         let hint = '';
         if (matchedKeywords.length > 0) {
           hint = `아쉽지만 정답이 아니에요. 핵심 키워드 ${keywords.length}개 중 ${matchedKeywords.length}개를 맞추셨어요. (맞춘 키워드: ${matchedKeywords.join(', ')})`;

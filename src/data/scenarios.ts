@@ -27,7 +27,7 @@ export const scenarios: Scenario[] = [
       "남자가 자살한 이유는 수프 맛 때문만은 아닙니다."
     ],
     difficulty: '상',
-    keywords: ['수프', '자살'],
+    keywords: ['과거', '조난', '사람 고기', '인육', '레스토랑'],
     exampleQuestions: [
       '남자는 식당에 혼자 갔나요?',
       '수프에 이상한 것이 들어 있었나요?',
@@ -46,7 +46,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['여자', '피에 대한 트라우마'],
+    keywords: ['색맹', '트라우마', '피', '붉은 옷'],
     exampleQuestions: [
       '여자는 실제 사람인가요?',
       '남자는 특정 직업을 가지고 있나요?',
@@ -65,7 +65,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '중',
-    keywords: ['엘리베이터', '정전'],
+    keywords: ['시각장애인', '안내원', '엘리베이터', '정전'],
     exampleQuestions: [
       '남자는 엘리베이터에 혼자 있었나요?',
       '정전은 오랫동안 지속되었나요?',
@@ -84,7 +84,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['비행기', '추락'],
+    keywords: ['비행기', '추락', '사막'],
     exampleQuestions: [
       '남자는 사막에서 길을 잃었나요?',
       '남자 주변에 다른 물건이 있었나요?',
@@ -103,7 +103,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['얼음', '물웅덩이'],
+    keywords: ['얼음', '물웅덩이', '자살'],
     exampleQuestions: [
       '방은 잠겨 있었나요?',
       '물웅덩이는 깨끗한 물이었나요?',
@@ -122,7 +122,7 @@ export const scenarios: Scenario[] = [
       "피해자(또는 관련 인물)의 직업이나 특별한 상황이 단서가 될 수 있습니다."
     ],
     difficulty: '하',
-    keywords: ['산장', '눈사태'],
+    keywords: ['산장', '눈사태', '자연재해'],
     exampleQuestions: [
       '남자는 살해당했나요?',
       '산장에는 남자 혼자 있었나요?',
