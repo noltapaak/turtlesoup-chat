@@ -11,8 +11,8 @@ const groq = new Groq({
 
 // 주관식 질문을 판별하는 함수
 function isSubjectiveQuestion(prompt: string): boolean {
-  // '예', '아니오'로 답할 수 없는 질문의 키워드 목록
-  const subjectiveKeywords = ['누가', '언제', '어디', '무엇', '어떻게', '왜', '어떤', '무슨', '얼마나', '몇 '];
+  // '예', '아니오'로 답할 수 없는 질문의 키워드 목록을 대폭 강화합니다.
+  const subjectiveKeywords = ['누가', '언제', '어디', '무엇을', '무엇', '뭘', '어떻게', '왜', '어떤', '어느', '무슨', '얼마나', '몇'];
   const regex = new RegExp(subjectiveKeywords.join('|'));
   return regex.test(prompt);
 }
@@ -106,7 +106,8 @@ export async function POST(req: NextRequest) {
     // 단계 0: 단일 명사 또는 불분명한 짧은 입력 필터링
     if (isVagueNounInput(prompt)) {
       console.log('Vague noun input detected, responding without calling AI.');
-      return NextResponse.json({ response: `'${prompt}'에 대해 질문하시려면, 완전한 문장으로 다시 물어봐 주시겠어요? (예: '${prompt}'이/가 사건과 관련이 있나요?)` });
+      const cleanPrompt = prompt.replace(/[?]/g, '');
+      return NextResponse.json({ response: `'${cleanPrompt}'에 대해 질문하시려면, 완전한 문장으로 다시 물어봐 주시겠어요? (예: '${cleanPrompt}'이/가 사건과 관련이 있나요?)` });
     }
 
     // 1단계: 서버에서 주관식 질문 사전 필터링
@@ -146,13 +147,15 @@ export async function POST(req: NextRequest) {
     let finalResponse = '';
     switch (aiResponse) {
       case 'YES':
-        const questionBody = prompt.slice(0, -1); // '?' 제거
+        const questionBody = prompt.endsWith('?') ? prompt.slice(0, -1) : prompt;
         if (questionBody.endsWith('나요')) { // ex: ~했나요?, ~있나요?
-          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -1)}습니다.`;
+          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}습니다.`;
+        } else if (questionBody.endsWith('가요')) { // ex: ~가요?
+          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}니다.`;
         } else if (questionBody.endsWith('인가요')) { // ex: ~인가요?
-          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}입니다.`;
+          finalResponse = `네, 맞습니다. ${questionBody.slice(0, -3)}입니다.`;
         } else {
-          finalResponse = '네, 맞습니다.'; // 기타 긍정 답변
+          finalResponse = '네, 맞습니다.'; // 그 외의 경우는 가장 안전한 답변으로 처리
         }
         break;
       case 'NO':
