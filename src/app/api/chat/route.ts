@@ -17,6 +17,35 @@ function isSubjectiveQuestion(prompt: string): boolean {
   return regex.test(prompt);
 }
 
+/**
+ * 사용자의 입력이 질문 형태가 아닌 단일 명사인지 판별합니다.
+ * @param prompt 사용자 입력
+ * @returns 단일 명사 형태이면 true, 그렇지 않으면 false
+ */
+function isVagueNounInput(prompt: string): boolean {
+    const p = prompt.trim();
+    // 문장에 공백이 포함되어 있으면 구나 절로 판단하여, 단일 명사가 아니라고 간주합니다.
+    if (p.includes(' ')) {
+        return false;
+    }
+
+    // 한 글자 입력은 대부분 의도가 불분명하므로 모호한 입력으로 처리합니다.
+    if (p.length === 1) {
+        return true;
+    }
+
+    // 입력이 전형적인 한국어 질문 어미로 끝나는지 확인합니다.
+    const questionEndings = ['나요?', '가요?', '인가요?', '습니까?', 'ㅂ니까?', '했나요?', '었나요?', '였나요?', '죠?', '까요?'];
+    for (const ending of questionEndings) {
+        if (p.endsWith(ending)) {
+            return false; // 예: "교통사고인가요?"
+        }
+    }
+
+    // 공백이 없으면서, 명확한 질문 어미로 끝나지 않는 경우 단일 명사로 판단합니다.
+    return true;
+}
+
 export async function POST(req: NextRequest) {
   console.log('API Route /api/chat called with Groq');
   try {
@@ -73,6 +102,12 @@ export async function POST(req: NextRequest) {
     }
 
     // --- 일반 질문 처리 로직 ---
+
+    // 단계 0: 단일 명사 또는 불분명한 짧은 입력 필터링
+    if (isVagueNounInput(prompt)) {
+      console.log('Vague noun input detected, responding without calling AI.');
+      return NextResponse.json({ response: `'${prompt}'에 대해 질문하시려면, 완전한 문장으로 다시 물어봐 주시겠어요? (예: '${prompt}'이/가 사건과 관련이 있나요?)` });
+    }
 
     // 1단계: 서버에서 주관식 질문 사전 필터링
     if (isSubjectiveQuestion(prompt)) {
