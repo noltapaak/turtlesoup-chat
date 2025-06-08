@@ -91,40 +91,36 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Server configuration error: GROQ_API_KEY not set' }, { status: 500 });
     }
 
-    // '정답 외치기'와 '일반 질문' 로직을 완전히 분리하여 처리합니다.
+    // --- '정답 외치기' 처리 로직 ---
     if (isGuess) {
-      // 정답 추측 시 시스템 프롬프트
-      const systemMessageContent = `당신은 추리 게임의 정답 판정 AI입니다. 사용자가 정답을 추측했습니다. 주어진 정답과 사용자의 입력을 비교하여 판정해주세요.
+      const { keywords, answer, explanation } = scenario;
+      const matchedKeywords = keywords.filter(keyword => prompt.includes(keyword));
 
-      - **정답:** "${scenario.answer}"
-      - **정답 설명:** "${scenario.explanation || '자세한 해설이 없습니다.'}"
-      
-      **판정 규칙:**
-      1. 사용자의 추측이 핵심 요소를 포함하여 **정답과 일치**하면, **반드시 "정답입니다."로 답변을 시작**하고, 이어서 정답 설명을 덧붙여주세요. (예: "정답입니다. ${scenario.explanation}")
-      2. 사용자의 추측이 **정답과 다르다면**, **절대 정답을 노출하지 마세요.** 대신, 다음 힌트 중 가장 적절한 하나만 골라 간결하게 답변해주세요.
-         - "인물의 행동에 대한 이유가 조금 더 명확해야 합니다."
-         - "사건이 발생한 장소나 상황이 더 구체적이어야 합니다."
-         - "사건의 핵심 인물이나 대상이 명확하지 않습니다."
-         - "사건의 중요한 과정 일부가 빠져있습니다."
-         - "추측하신 내용과 실제 사실은 다릅니다."`;
-      
-      const chatCompletion = await groq.chat.completions.create({
-          messages: [
-            { role: 'system', content: systemMessageContent },
-            ...(prevMessages || []).slice(-4).map(msg => ({
-              role: msg.role === 'ai' ? 'assistant' : 'user' as 'assistant' | 'user',
-              content: msg.content
-            })),
-            { role: 'user', content: prompt },
-          ],
-          model: 'llama3-8b-8192',
-          temperature: 0.7,
-          max_tokens: 200, // 정답 설명을 위해 토큰을 넉넉하게 설정
-      });
+      if (matchedKeywords.length === keywords.length) {
+        // 모든 키워드가 포함된 경우: 정답
+        return NextResponse.json({
+          response: {
+            isCorrect: true,
+            answer,
+            explanation
+          }
+        });
+      } else {
+        // 일부 키워드만 포함된 경우: 오답 및 힌트 제공
+        let hint = '';
+        if (matchedKeywords.length > 0) {
+          hint = `아쉽지만 정답이 아니에요. 핵심 키워드 ${keywords.length}개 중 ${matchedKeywords.length}개를 맞추셨어요. (맞춘 키워드: ${matchedKeywords.join(', ')})`;
+        } else {
+          hint = '아쉽지만 정답이 아니에요. 맞춘 키워드가 하나도 없네요.';
+        }
 
-      const finalResponse = chatCompletion.choices[0]?.message?.content || "오류가 발생했습니다. 다시 시도해주세요.";
-      console.log(`AI raw response (guess): ${finalResponse}`);
-      return NextResponse.json({ response: finalResponse });
+        return NextResponse.json({
+          response: {
+            isCorrect: false,
+            hint: hint,
+          },
+        });
+      }
     }
 
     // --- [파이프라인] 일반 질문 처리 로직 ---
