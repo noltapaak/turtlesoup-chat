@@ -9,47 +9,72 @@ const groq = new Groq({
   apiKey: process.env.GROQ_API_KEY,
 });
 
-// 주관식 질문을 판별하는 함수
+// Helper Functions - START
+
+/**
+ * 질문이 주관식인지 판별합니다.
+ * @param prompt 사용자 입력
+ */
 function isSubjectiveQuestion(prompt: string): boolean {
-  // '예', '아니오'로 답할 수 없는 질문의 키워드 목록을 대폭 강화합니다.
-  const subjectiveKeywords = ['누가', '언제', '어디', '무엇을', '무엇', '뭘', '어떻게', '왜', '어떤', '어느', '무슨', '얼마나', '몇'];
-  const regex = new RegExp(subjectiveKeywords.join('|'));
+  const keywords = ['누가', '언제', '어디', '무엇을', '무엇', '뭘', '어떻게', '왜', '어떤', '어느', '무슨', '얼마나', '몇'];
+  const regex = new RegExp(keywords.join('|'));
   return regex.test(prompt);
 }
 
 /**
- * 사용자의 입력이 질문 형태가 아닌 단일 명사인지 판별합니다.
+ * 질문이 불완전한 단어/명사 형태인지 판별합니다.
  * @param prompt 사용자 입력
- * @returns 단일 명사 형태이면 true, 그렇지 않으면 false
  */
 function isVagueNounInput(prompt: string): boolean {
+  const p = prompt.trim();
+  if (p.includes(' ')) return false; // 공백이 있으면 구/절로 간주
+  if (p.length <= 1) return true; // 한 글자는 불완전
+
+  const questionEndings = ['나요', '가요', '인가요', '습니까', 'ㅂ니까', '했나요', '었나요', '였나요', '죠', '까요'];
+  return !questionEndings.some(ending => p.endsWith(ending + '?'));
+}
+
+/**
+ * 질문에 주어가 없는지 판별합니다.
+ * @param prompt 사용자 입력
+ */
+function isMissingSubject(prompt: string): boolean {
     const p = prompt.trim();
-    // 문장에 공백이 포함되어 있으면 구나 절로 판단하여, 단일 명사가 아니라고 간주합니다.
-    if (p.includes(' ')) {
+    // 시나리오의 핵심 인물/사물 키워드 (확장 가능)
+    const subjects = ['남자', '여자', '아이', '그', '그녀', '범인', '조종사', '사람', '인물', '물건'];
+    if (subjects.some(s => p.startsWith(s))) {
         return false;
     }
-
-    // 한 글자 입력은 대부분 의도가 불분명하므로 모호한 입력으로 처리합니다.
-    if (p.length === 1) {
+    // 동사/형용사로 시작하는 짧은 질문을 주어 없는 것으로 간주
+    const verbEndings = ['나요?', '가요?', '었나요?', '였나요?'];
+    if (p.split(' ').length <= 2 && verbEndings.some(e => p.endsWith(e))) {
         return true;
     }
-
-    // 입력이 전형적인 한국어 질문 어미로 끝나는지 확인합니다.
-    const questionEndings = ['나요?', '가요?', '인가요?', '습니까?', 'ㅂ니까?', '했나요?', '었나요?', '였나요?', '죠?', '까요?'];
-    for (const ending of questionEndings) {
-        if (p.endsWith(ending)) {
-            return false; // 예: "교통사고인가요?"
-        }
-    }
-
-    // 공백이 없으면서, 명확한 질문 어미로 끝나지 않는 경우 단일 명사로 판단합니다.
-    return true;
+    return false;
 }
+
+/**
+ * 사용자의 입력이 정답을 말하려는 서술형 문장인지 판별합니다.
+ * @param prompt 사용자 입력
+ */
+function isDeclarativeStatement(prompt: string): boolean {
+    const p = prompt.trim();
+    const questionEndings = ['?', '나요', '가요', '인가요', '죠', '까요'];
+    if (questionEndings.some(e => p.endsWith(e))) {
+        return false;
+    }
+    // 문장이 "~다." 또는 서술형 어미로 끝나는 경우
+    const declarativeEndings = ['다', '어', '어.', '죠', '죠.'];
+    return declarativeEndings.some(e => p.endsWith(e));
+}
+
+// Helper Functions - END
 
 export async function POST(req: NextRequest) {
   console.log('API Route /api/chat called with Groq');
   try {
-    const { prompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
+    const { prompt: rawPrompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
+    const prompt = rawPrompt.trim();
     console.log('Received prompt:', prompt);
     console.log('Received scenario ID:', scenario?.id);
     console.log('Is this a guess?', isGuess);
@@ -101,22 +126,25 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ response: finalResponse });
     }
 
-    // --- 일반 질문 처리 로직 ---
+    // --- [파이프라인] 일반 질문 처리 로직 ---
 
-    // 단계 0: 단일 명사 또는 불분명한 짧은 입력 필터링
+    // 1. 불완전한 질문 처리
     if (isVagueNounInput(prompt)) {
-      console.log('Vague noun input detected, responding without calling AI.');
-      const cleanPrompt = prompt.replace(/[?]/g, '');
-      return NextResponse.json({ response: `'${cleanPrompt}'에 대해 질문하시려면, 완전한 문장으로 다시 물어봐 주시겠어요? (예: '${cleanPrompt}'이/가 사건과 관련이 있나요?)` });
+        return NextResponse.json({ response: "질문이 조금 더 구체적이면 좋을 것 같아요. 예: '밥을 먹었나요?'처럼 완전한 문장으로 물어봐 주세요." });
+    }
+    if (isMissingSubject(prompt)) {
+        return NextResponse.json({ response: "누구에 대한 질문인지 명확하지 않아요. 예: '남자가 죽었나요?'처럼 질문해주세요." });
     }
 
-    // 1단계: 서버에서 주관식 질문 사전 필터링
+    // 2. 질문 의도 분석
     if (isSubjectiveQuestion(prompt)) {
-      console.log('Subjective question detected, responding without calling AI.');
-      return NextResponse.json({ response: "죄송하지만 '예' 또는 '아니오'로 답할 수 있는 질문으로 다시 물어봐 주시겠어요?" });
+        return NextResponse.json({ response: "죄송하지만 '예' 또는 '아니오'로 답할 수 있는 질문으로 다시 물어봐 주세요." });
     }
-    
-    // 2단계: AI의 역할을 '판정'으로 제한하는 시스템 프롬프트
+     if (isDeclarativeStatement(prompt)) {
+        return NextResponse.json({ response: "혹시 정답을 말씀하시려는 건가요? '정답 외치기' 버튼을 사용해 주세요!" });
+    }
+
+    // 3. AI를 이용한 '판정'
     const systemMessageContent = `You are a fact-checking AI.
     The TRUTH is: "${scenario.answer}".
     
@@ -141,21 +169,21 @@ export async function POST(req: NextRequest) {
         max_tokens: 10,
     });
     
-    const aiResponse = chatCompletion.choices[0]?.message?.content?.trim().toUpperCase() || '';
+    const aiResponse = chatCompletion.choices[0]?.message?.content?.trim().toUpperCase() || 'ERROR';
     
-    // 3단계: AI의 판정을 기반으로 서버에서 최종 답변 생성 (고도화된 버전)
+    // 4. 응답 검증 및 최종 조립
     let finalResponse = '';
     switch (aiResponse) {
       case 'YES':
         const questionBody = prompt.endsWith('?') ? prompt.slice(0, -1) : prompt;
-        if (questionBody.endsWith('나요')) { // ex: ~했나요?, ~있나요?
+        if (questionBody.endsWith('나요')) {
           finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}습니다.`;
-        } else if (questionBody.endsWith('가요')) { // ex: ~가요?
+        } else if (questionBody.endsWith('가요')) {
           finalResponse = `네, 맞습니다. ${questionBody.slice(0, -2)}니다.`;
-        } else if (questionBody.endsWith('인가요')) { // ex: ~인가요?
+        } else if (questionBody.endsWith('인가요')) {
           finalResponse = `네, 맞습니다. ${questionBody.slice(0, -3)}입니다.`;
         } else {
-          finalResponse = '네, 맞습니다.'; // 그 외의 경우는 가장 안전한 답변으로 처리
+          finalResponse = '네, 맞습니다.';
         }
         break;
       case 'NO':
@@ -164,9 +192,8 @@ export async function POST(req: NextRequest) {
       case 'IRRELEVANT':
         finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
         break;
-      default:
-        console.warn("Unexpected AI response, defaulting to 'irrelevant'. Response:", aiResponse);
-        finalResponse = '그것은 사건과 직접적인 관련이 없습니다.';
+      default: // AI가 이상한 답변을 했을 경우
+        finalResponse = "답변을 정확히 이해하지 못했어요. 다시 질문해 주시겠어요?";
         break;
     }
 
