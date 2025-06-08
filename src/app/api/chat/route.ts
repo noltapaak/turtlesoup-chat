@@ -20,7 +20,7 @@ function isSubjectiveQuestion(prompt: string): boolean {
 export async function POST(req: NextRequest) {
   console.log('API Route /api/chat called with Groq');
   try {
-    const { prompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
+    const { prompt, scenario, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
     console.log('Received prompt:', prompt);
     console.log('Received scenario ID:', scenario?.id);
     console.log('Is this a guess?', isGuess);
@@ -101,9 +101,12 @@ export async function POST(req: NextRequest) {
       switch (aiResponse) {
         case 'YES':
           // 사용자의 질문을 자연스럽게 활용하여 긍정문 생성
-          const positiveEnding = prompt.endsWith('나요?') ? '습니다.' : ' 맞습니다.';
-          const questionBody = prompt.replace(/[?가-힣]$/, '').trim();
-          finalResponse = `네, 맞습니다. ${questionBody} 맞습니다.`;
+          if (prompt.endsWith('나요?')) {
+            const questionBody = prompt.slice(0, -3); // "했나요?" -> "했"
+            finalResponse = `네, 맞습니다. ${questionBody}했습니다.`; // "했습니다"
+          } else {
+            finalResponse = '네, 맞습니다.';
+          }
           break;
         case 'NO':
           finalResponse = '아니요, 그렇지 않습니다.';
