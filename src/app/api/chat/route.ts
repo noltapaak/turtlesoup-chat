@@ -168,7 +168,9 @@ If no keywords are matched, return an empty array [].`;
         }
 
         let hint = '';
-        if (matchedKeywords.length > 0) {
+        if (matchedKeywords.length === keywords.length) {
+          hint = '핵심 키워드는 모두 포함되었지만, 사건의 전후 관계나 맥락이 정답과 다릅니다. 다시 한번 추리해보세요!';
+        } else if (matchedKeywords.length > 0) {
           hint = `아쉽지만 정답이 아니에요. 핵심 키워드 ${keywords.length}개 중 ${matchedKeywords.length}개를 맞추셨어요. (맞춘 키워드: ${matchedKeywords.join(', ')})`;
         } else {
           hint = '아쉽지만 정답이 아니에요. 맞춘 키워드가 하나도 없네요.';
