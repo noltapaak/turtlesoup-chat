@@ -59,12 +59,13 @@ function isMissingSubject(prompt: string): boolean {
  */
 function isDeclarativeStatement(prompt: string): boolean {
     const p = prompt.trim();
-    const questionEndings = ['?', '나요', '가요', '인가요', '죠', '까요'];
-    if (questionEndings.some(e => p.endsWith(e))) {
+    // 물음표로 끝나면 질문으로 간주합니다.
+    if (p.endsWith('?')) {
         return false;
     }
-    // 문장이 "~다." 또는 서술형 어미로 끝나는 경우
-    const declarativeEndings = ['다', '어', '어.', '죠', '죠.'];
+    // 명확한 질문형 어미가 아닌, 서술/평서형 어미로 끝나는 경우 정답 시도로 판단합니다.
+    // "죽었어"와 같은 구어체도 포함합니다.
+    const declarativeEndings = ['다', '다.', '어', '어.', '죠', '죠.', '음', '음.'];
     return declarativeEndings.some(e => p.endsWith(e));
 }
 
@@ -145,20 +146,22 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. AI를 이용한 '판정'
-    const systemMessageContent = `You are a fact-checking AI.
-    The TRUTH is: "${scenario.answer}".
-    
-    Analyze the user's question: "${prompt}"
-    
-    Based on the TRUTH, is the user's question True, False, or Irrelevant?
-    - If the question is true according to the TRUTH, respond with ONLY the single word: YES
-    - If the question is false according to the TRUTH, respond with ONLY the single word: NO
-    - If the question is not related to the TRUTH, respond with ONLY the single word: IRRELEVANT
-    
-    Your entire response MUST be a single word. Do not add any explanation or punctuation.`;
+    const systemMessageContent = `당신은 추리 게임의 심판입니다. 당신의 유일한 목표는 플레이어의 질문이 비밀 정답과 일치하는지 판정하는 것입니다.
+
+**비밀 정답:** "${scenario.answer}"
+
+**플레이어의 질문:** "${prompt}"
+
+플레이어의 질문을 다음 세 가지 중 하나로 분류하세요:
+1.  **YES**: 질문 내용이 '비밀 정답'에 비추어 보았을 때 **사실과 일치하거나, 의미적으로 연관성이 매우 높은 경우**.
+2.  **NO**: 질문 내용이 '비밀 정답'과 **명백히 다르거나, 사실이 아닌 경우**.
+3.  **IRRELEVANT**: 질문 내용이 '비밀 정답'과 **직접적인 관련이 없는 경우**.
+
+**오직 단 한 단어로만 대답하세요: YES, NO, 또는 IRRELEVANT.** 어떤 설명이나 문장 부호도 추가하지 마세요.`;
     
     const messagesToGroq: ChatCompletionMessageParam[] = [
       { role: 'system', content: systemMessageContent },
+      // AI가 현재 질문에만 집중하도록 이전 대화 내용은 포함하지 않습니다.
       { role: 'user', content: prompt },
     ];
 
