@@ -74,7 +74,7 @@ function isDeclarativeStatement(prompt: string): boolean {
 export async function POST(req: NextRequest) {
   console.log('API Route /api/chat called with Groq');
   try {
-    const { prompt: rawPrompt, scenario, messages: prevMessages, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
+    const { prompt: rawPrompt, scenario, isGuess } = await req.json() as { prompt: string, scenario: Scenario, messages: {role: 'user' | 'ai', content: string}[], isGuess?: boolean };
     const prompt = rawPrompt.trim();
     console.log('Received prompt:', prompt);
     console.log('Received scenario ID:', scenario?.id);

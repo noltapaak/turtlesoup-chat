@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState } from 'react';
 import { Scenario } from '@/data/scenarios';
 import { Button } from '@/components/ui/button';
 import CorrectAnswerModal from './CorrectAnswerModal';
@@ -16,8 +16,6 @@ export default function Chat({ scenario }: { scenario: Scenario }) {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [correctAnswer, setCorrectAnswer] = useState<{ answer: string; explanation: string } | null>(null);
-
-  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleGuess = async (e: React.FormEvent) => {
     e.preventDefault();
